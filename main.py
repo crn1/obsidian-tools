@@ -1,3 +1,4 @@
+import os
 import sys
 import signal
 import pystray
@@ -9,6 +10,10 @@ from threading import Thread
 
 from hotkeys import add_hotkeys
 from chrome_engine import start_chrome_engine, shutdown_server
+
+# Define global variables that will be used a lot
+current_url = ""
+current_html = ""
 
 # Function to be executed when the quit option is selected
 def quit_program(icon, item):
@@ -47,6 +52,10 @@ keyboard.add_hotkey("Alt+0", cleanup_and_quit) # Hide - Ctrl+H
 
 # Import all the hotkeys from hotkeys.py file
 add_hotkeys()
+
+# Welcome to Obsidian Tools!
+os.system('cls')
+print('* * * Obsidian Tools v1 by crn1 * * *')
 
 # Run the console app
 try:
