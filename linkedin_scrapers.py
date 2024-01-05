@@ -1,0 +1,95 @@
+import bs4
+import global_variables
+
+def find_experience_section(tag):
+    return tag.name == 'section' and 'Experience' in tag.get_text() and 'Experienced' not in tag.get_text()
+
+def scrape_linkedin_profile():
+    html = global_variables.current_html
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+
+    name = ''
+    headline = ''
+    location = ''
+    company = ''
+
+    try:
+        name = soup.select_one('h1')
+        # if name:
+        #     print("Name: " + name.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        headline = soup.select_one('#profile-content > div > div > div > div > main > section > div > div > div:nth-child(1) > div.text-body-medium.break-words')
+        # if headline:
+        #     print("Headline: " + headline.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        location = soup.select_one('#profile-content > div > div > div > div > main > section > div > div > div > span.text-body-small.inline.t-black--light.break-words')
+        # if location:
+        #     print("Location: " + location.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        # Find the section containing the text "Experience"
+        experience_section = soup.find(find_experience_section)
+
+        # Check if the section is found
+        if experience_section:
+            # Now you can continue with your original CSS selector
+            company = experience_section.select_one('div > ul > li:nth-child(1) > div > div > div > div > span:nth-child(2) > span:nth-child(1)')
+
+            # Process the company data as needed
+            if company:
+                company = company.text.split(" · ", -1)[0]
+                # print("Company: " + company)
+        else:
+            print("Experience section not found.")
+
+    except Exception as e:
+            print(e)
+
+    return name.text.strip(), headline.text.strip(), location.text.strip(), company
+
+def scrape_linkedin_company():
+    html = global_variables.current_html
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+
+    name = ''
+    description = ''
+    location = ''
+    industry = ''
+
+    try:
+        name = soup.select_one('h1')
+        # if name:
+        #     print("Name: " + name.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        description = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > p')
+        # if description:
+        #     print("Description: " + description.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        industry = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.org-top-card-summary-info-list__info-item')
+        # if industry:
+        #     print("Indsutry: " + industry.text.strip())
+    except Exception as e:
+        print(e)
+
+    try:
+        location = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.inline-block > div:nth-child(1)')
+        # if location:
+        #     print("Location: " + location.text.strip())
+    except Exception as e:
+        print(e)
+
+    return name.text.strip(), description.text.strip(), location.text.strip(), industry.text.strip()
