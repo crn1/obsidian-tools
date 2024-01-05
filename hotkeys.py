@@ -1,6 +1,9 @@
 import keyboard
+import obsidian_engine
+import console
 
 def add_hotkeys():
-    pass
-    #keyboard.add_hotkey("Alt+T", chrome_engine.get_current_website_info)
+    keyboard.add_hotkey("Alt+S", console.show_console)  # Show - Ctrl+S
+    keyboard.add_hotkey("Alt+H", console.hide_console) # Hide - Ctrl+H
+    keyboard.add_hotkey("Alt+I", obsidian_engine.interesting_link_to_obsidian)
 

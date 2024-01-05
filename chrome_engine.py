@@ -3,32 +3,26 @@ from socketserver import TCPServer
 import signal
 import sys
 
+import global_variables
+
 def update_global_variables(data):
-    global current_url
-    global current_html
     try:
-        if "<<SEPARATOR>>" not in data:
-            # One-line string
-            current_url = data
-            current_html = ''
-            print('URL: ' + current_url)
-        else:
+        if "<<SEPARATOR>>" in data:
             # More than one line
-            current_url, current_html = text.split("<<SEPARATOR>>", 1)
-            print('URL: ' + current_url)
-            print('HTML: ' + current_html)
-    except:
-        pass
+            global_variables.current_url, global_variables.current_html = data.split("<<SEPARATOR>>", 1)
+            # print('HTML: ' + current_html)
+        else:
+            # One-line string
+            global_variables.current_url = data
+            global_variables.current_html = ''
+    except Exception as e:
+        print(e)
 
 class MyHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         data = self.rfile.read(content_length).decode('utf-8')
         update_global_variables(data)
-
-def shutdown_server(signum, frame):
-    print("Shutting down the server...")
-    httpd.server_close()
 
 def start_chrome_engine():
     port = 8080
