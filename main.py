@@ -3,7 +3,6 @@ from threading import Thread
 import hotkeys
 import chrome_engine
 import console
-import tray
 import obsidian_engine
 
 # Import all the hotkeys from hotkeys.py file
@@ -15,10 +14,6 @@ console.clear_console()
 # Create and start the HTTP server thread
 http_server_thread = Thread(target=chrome_engine.start_chrome_engine)
 http_server_thread.start()
-
-# Create and start the PyStray thread
-pystray_thread = Thread(target=tray.start_tray_menu)
-pystray_thread.start()
 
 obsidian_thread = Thread(target=obsidian_engine.obsidian_checker)
 obsidian_thread.start()

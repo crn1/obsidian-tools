@@ -44,7 +44,7 @@ def search_for_entity(folder_path, message_found, message_not_found, print_messa
 
 def obsidian_checker():
     while True:
-        time.sleep(3)
+        time.sleep(1)
 
         if not global_variables.active_input:
 
@@ -54,3 +54,5 @@ def obsidian_checker():
                 search_for_entity(global_variables.obsidian_talents_path, "@ @ @ ALREADY IN TALENT POOL", "% % % NOT IN TALENT POOL")
             elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
                 search_for_entity(global_variables.obsidian_companies_path, "@ @ @ IS IN CRM", "% % % NOT IN CRM")
+            else:
+                print("Current URL: " + global_variables.current_url)
