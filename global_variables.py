@@ -10,3 +10,4 @@ obsidian_interesting_links_path = obsidian_vault_path + "R&D aparat\\Interesantn
 obsidian_talents_path = obsidian_vault_path + "ATS\\Talents\\"
 obsidian_contacts_path = obsidian_vault_path + "CRM\\Contacts\\"
 obsidian_companies_path = obsidian_vault_path + "CRM\\Companies\\"
+obsidian_talent_template_path = obsidian_vault_path + "Templates\\Talent.md"
