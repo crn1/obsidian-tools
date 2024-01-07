@@ -64,7 +64,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
             elif "Location: " in line and location:
                 new_file_content.append(f'Location: {location}\n')
             elif "Company: " in line and company_name:
-                new_file_content.append(f'Company: [[{output_path}{company_name}.md]]\n')
+                new_file_content.append(f'Company: [{company_name}]({output_path}{company_name}.md)\n')
             elif "Headline: " in line and headline:
                 new_file_content.append(f'Headline: {headline}\n')
             elif "Description: " in line and description:
