@@ -86,7 +86,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
 def search_for_entity(folder_path, message_found='', message_not_found='', print_message=True):
     try:
         for file_name in os.listdir(folder_path):
-            file_path = os.path.join(global_variables.obsidian_talents_path, file_name)
+            file_path = os.path.join(folder_path, file_name)
 
             # Check if the path is a file and if it has the .md extension
             if os.path.isfile(file_path) and file_name.endswith(".md"):
@@ -118,7 +118,7 @@ def obsidian_checker():
 
             if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
                 search_for_entity(global_variables.obsidian_talents_path, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
-                print('\n')
+                print('')
                 search_for_entity(global_variables.obsidian_contacts_path, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
             elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
                 search_for_entity(global_variables.obsidian_companies_path, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
