@@ -21,7 +21,7 @@ def update_global_variables(data):
 class MyHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
-        data = self.rfile.read(content_length).decode('utf-8')
+        data = self.rfile.read(content_length).decode('unicode_escape')
         update_global_variables(data)
 
 def start_chrome_engine():
