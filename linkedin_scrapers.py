@@ -72,7 +72,7 @@ def scrape_linkedin_profile():
 
             # Process the company data as needed
             if company:
-                company = company.text.split(" · ", -1)[0]
+                company = company.text.split(" · ")[0].strip()
                 # print("Company: " + company)
         else:
             print("Experience section not found.")

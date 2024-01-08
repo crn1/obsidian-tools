@@ -58,7 +58,7 @@ def interesting_link_to_obsidian():
     url_name = input('Enter a name of the URL: ')
 
     try:
-        with open(file_path, "a") as file:
+        with open(file_path, "a", encoding='utf-8') as file:
             # Append the text, ensuring proper newline handling
             file.write(f"\n- [{url_name}]({current_url})")
 
@@ -173,7 +173,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
                 new_file_content.append(line)
 
         output_file_path = os.path.join(output_path, f'{name}.md')
-        with open(output_file_path, 'w') as file:
+        with open(output_file_path, 'w', encoding='utf-8') as file:
             file.writelines(new_file_content)
 
         print(f'File written to {output_file_path}')
