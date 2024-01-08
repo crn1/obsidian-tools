@@ -3,6 +3,50 @@ import global_variables
 import time
 import linkedin_scrapers
 import re
+from dateutil.parser import parse
+import webbrowser
+
+open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
+open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
+
+def open_file_in_obsidian(file_path):
+    try:
+        vault_name = global_variables.obsidian_vault_name
+
+        # Remove abs path and leave only what is needed for file arg in Obsidian's URI
+        file_path = file_path.replace(global_variables.obsidian_vault_path, '')
+        file_path = file_path.replace('\\', '/')
+
+        uri = f"obsidian://open?vault={vault_name}&file={file_path}"
+        webbrowser.open(uri)
+    except Exception as e:
+        print(e)
+
+open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
+
+def open_linkedin_file_in_obsidian(search_for_talent=True):
+    current_url = global_variables.current_url
+
+    if current_url.startswith('https://www.linkedin.com/company'):
+        folder_path = global_variables.obsidian_companies_path
+    elif current_url.startswith('https://www.linkedin.com/messaging/thread/'):
+        folder_path = global_variables.obsidian_snoozes_path
+    elif current_url.startswith('https://www.linkedin.com/in/'):
+        if search_for_talent:
+            folder_path = global_variables.obsidian_talents_path
+        else:
+            folder_path = global_variables.obsidian_contacts_path
+    else:
+        print('Error: The link is not supported for opening!')
+        return False
+
+    file_path = search_for_entity(folder_path, current_url, print_message=False)
+
+    if not file_path:
+        print('Error: The file does not exist in the system')
+        return False
+
+    open_file_in_obsidian(file_path)
 
 def interesting_link_to_obsidian():
     # Specify the file path
@@ -22,6 +66,60 @@ def interesting_link_to_obsidian():
 
     except Exception as e:
         print(f"Error appending the file: {e}")
+
+    global_variables.active_input = False
+
+def add_new_snooze_from_linkedin_messaging():
+    output_path = global_variables.obsidian_snoozes_path
+    template_file = global_variables.obsidian_snooze_template_path
+    current_url = global_variables.current_url
+
+    global_variables.active_input = True
+
+    if current_url.startswith(f'https://www.linkedin.com/messaging/thread/'):
+        name = linkedin_scrapers.scrape_linkedin_messaging()
+    else:
+        name = input('Enter a name of the URL: ')
+
+    while True:
+        try:
+            date = input('Enter the date: ')
+            date = parse(date, fuzzy=True)
+            break
+        except Exception as e:
+            print(e)
+
+    tag = input('Enter tags: ')
+    description = input('Enter description: ')
+
+    try:
+        with open(template_file, "r") as file:
+            file_content = file.readlines()
+
+        new_file_content = []
+        for line in file_content:
+            if "Name: " in line:
+                new_file_content.append(f'Name: {name}\n')
+            elif "Link: " in line:
+                new_file_content.append(f'Link: {current_url}\n')
+            elif "Date: " in line:
+                new_file_content.append(f'Date: {date}\n')
+            elif "Tag: " in line:
+                new_file_content.append(f'Tag: {tag}\n')
+            elif "Description: " in line:
+                new_file_content.append(f'Description: {description}\n')
+            else:
+                new_file_content.append(line)
+
+        output_file_path = os.path.join(output_path, f'{name}.md')
+        with open(output_file_path, 'w') as file:
+            file.writelines(new_file_content)
+
+        print(f'File written to {output_file_path}')
+
+    except Exception as e:
+        print(e)
+        return False
 
     global_variables.active_input = False
 
@@ -49,8 +147,8 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
         print("Error: You're not on valid LinkedIn URL for this action!")
         return False
 
-    if search_for_entity(output_path):
-        print("Error: The person is already in the system for this action!")
+    if search_for_entity(output_path, current_url):
+        print("Error: The entity is already in the system for this action!")
         return False
 
     try:
@@ -83,7 +181,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
     except Exception as e:
         print(e)
 
-def search_for_entity(folder_path, message_found='', message_not_found='', print_message=True):
+def search_for_entity(folder_path, check_variable, message_found='', message_not_found='', print_message=True):
     try:
         for file_name in os.listdir(folder_path):
             file_path = os.path.join(folder_path, file_name)
@@ -94,10 +192,10 @@ def search_for_entity(folder_path, message_found='', message_not_found='', print
                 with open(file_path, 'r') as file:
                     file_contents = file.read()
 
-                    if global_variables.current_url in file_contents:
+                    if check_variable in file_contents:
                         if print_message:
                             print(message_found)
-                        return True
+                        return file_path
 
         if print_message:
             print(message_not_found)
@@ -117,8 +215,10 @@ def obsidian_checker():
             print(f'Current URL: {global_variables.current_url}\n')
 
             if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
-                search_for_entity(global_variables.obsidian_talents_path, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
+                search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
                 print('')
-                search_for_entity(global_variables.obsidian_contacts_path, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
+                search_for_entity(global_variables.obsidian_contacts_path, global_variables.current_url, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
             elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
-                search_for_entity(global_variables.obsidian_companies_path, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
+                search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
+            elif global_variables.current_url.startswith("https://www.linkedin.com/messaging/thread/"):
+                search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ ✅ ✅ IS IN SNOOZE", "❌ ❌ ❌ NOT IN SNOOZE")

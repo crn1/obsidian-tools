@@ -5,6 +5,27 @@ import unicodedata
 def find_experience_section(tag):
     return tag.name == 'section' and 'Experience' in tag.get_text() and 'Experienced' not in tag.get_text()
 
+def scrape_linkedin_messaging():
+    html = global_variables.current_html
+
+    name = ''
+
+    try:
+        soup = bs4.BeautifulSoup(html, 'html.parser')
+    except Exception as e:
+        print(e)
+        return name
+
+    try:
+        name = soup.select_one('#thread-detail-jump-target').text.strip()
+        if name:
+            print("Name: " + name)
+    except Exception as e:
+        print(e)
+
+    return name
+
+
 def scrape_linkedin_profile():
     html = global_variables.current_html
 
