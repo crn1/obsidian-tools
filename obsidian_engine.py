@@ -124,24 +124,24 @@ def add_new_snooze_from_linkedin_messaging():
     global_variables.active_input = False
 
 def add_new_contact_from_linkedin():
-    name, headline, location, company_name = linkedin_scrapers.scrape_linkedin_profile()
+    name, headline, location, company_name, position = linkedin_scrapers.scrape_linkedin_profile()
     output_path = global_variables.obsidian_contacts_path
     template_file = global_variables.obsidian_contact_template_path
-    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name)
+    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name, position=position)
 
 def add_new_talent_from_linkedin():
-    name, headline, location, company_name = linkedin_scrapers.scrape_linkedin_profile()
+    name, headline, location, company_name, position = linkedin_scrapers.scrape_linkedin_profile()
     output_path = global_variables.obsidian_talents_path
     template_file = global_variables.obsidian_talent_template_path
-    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name)
+    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name, position=position)
 
 def add_new_company_from_linkedin():
-    name, description, location, industry = linkedin_scrapers.scrape_linkedin_company()
+    name, description, location, industry, position = linkedin_scrapers.scrape_linkedin_company()
     output_path = global_variables.obsidian_companies_path
     template_file = global_variables.obsidian_company_template_path
     add_new_entity_from_linkedin('company/', output_path, template_file, name=name, description=description, location=location, industry=industry)
 
-def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_file, name='', headline='', location='', company_name='', description='', industry=''):
+def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_file, name='', headline='', location='', company_name='', description='', industry='', position=''):
     current_url = global_variables.current_url
     if not current_url.startswith(f'https://www.linkedin.com/{linkedin_starts_with}'):
         print("Error: You're not on valid LinkedIn URL for this action!")
@@ -166,9 +166,11 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
             elif "Headline: " in line and headline:
                 new_file_content.append(f'Headline: {headline}\n')
             elif "Description: " in line and description:
-                new_file_content.append(f'Descriion: {description}\n')
+                new_file_content.append(f'Description: {description}\n')
             elif "Industry: " in line and industry:
                 new_file_content.append(f'Industry: {industry}\n')
+            elif "Position: " in line and position:
+                new_file_content.append(f'Position: {position}\n')
             else:
                 new_file_content.append(line)
 

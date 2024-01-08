@@ -33,6 +33,7 @@ def scrape_linkedin_profile():
     headline = ''
     location = ''
     company = ''
+    position = ''
 
     try:
         soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -69,18 +70,23 @@ def scrape_linkedin_profile():
         if experience_section:
             # Now you can continue with your original CSS selector
             company = experience_section.select_one('div > ul > li:nth-child(1) > div > div > div > div > span:nth-child(2) > span:nth-child(1)')
+            position = experience_section.select_one('div > ul > li:nth-child(1) > div > div > div > div > div > div > div > div > span:nth-child(1)')
 
             # Process the company data as needed
             if company:
                 company = company.text.split(" · ")[0].strip()
                 # print("Company: " + company)
+
+            if position:
+                position = position.text.split(" · ")[0].strip()
+                # print("Position: " + position)
         else:
             print("Experience section not found.")
 
     except Exception as e:
             print(e)
 
-    return name, headline, location, company
+    return name, headline, location, company, position
 
 def scrape_linkedin_company():
     html = global_variables.current_html
