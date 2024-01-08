@@ -136,7 +136,7 @@ def add_new_talent_from_linkedin():
     add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name, position=position)
 
 def add_new_company_from_linkedin():
-    name, description, location, industry, position = linkedin_scrapers.scrape_linkedin_company()
+    name, description, location, industry = linkedin_scrapers.scrape_linkedin_company()
     output_path = global_variables.obsidian_companies_path
     template_file = global_variables.obsidian_company_template_path
     add_new_entity_from_linkedin('company/', output_path, template_file, name=name, description=description, location=location, industry=industry)
