@@ -98,9 +98,7 @@ def add_new_snooze_from_linkedin_messaging():
 
         new_file_content = []
         for line in file_content:
-            if "Name: " in line:
-                new_file_content.append(f'Name: {name}\n')
-            elif "Link: " in line:
+            if "Link: " in line:
                 new_file_content.append(f'Link: {current_url}\n')
             elif "Date: " in line:
                 new_file_content.append(f'Date: {date}\n')
