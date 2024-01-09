@@ -9,6 +9,30 @@ import webbrowser
 open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
 
+def write_file(output_path, name, new_file_content):
+    """Writes content to a file, ensuring a unique filename if a file with the same name already exists.
+
+    Args:
+        output_path (str): The path to the output directory.
+        name (str): The base name of the file (without extension).
+        new_file_content (str): The content to write to the file.
+    """
+
+    base_filename = f"{name}.md"
+    file_path = os.path.join(output_path, base_filename)
+
+    i = 1
+    while os.path.exists(file_path):
+        filename, extension = os.path.splitext(base_filename)
+        unique_filename = f"{filename} - {i}{extension}"
+        file_path = os.path.join(output_path, unique_filename)
+        i += 1
+
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.writelines(new_file_content)
+
+    print(f'File written to {file_path}')
+
 def open_file_in_obsidian(file_path):
     try:
         vault_name = global_variables.obsidian_vault_name
@@ -109,11 +133,7 @@ def add_new_snooze_from_linkedin_messaging():
             else:
                 new_file_content.append(line)
 
-        output_file_path = os.path.join(output_path, f'{name}.md')
-        with open(output_file_path, 'w') as file:
-            file.writelines(new_file_content)
-
-        print(f'File written to {output_file_path}')
+        write_file(output_path, name, new_file_content)
 
     except Exception as e:
         print(e)
@@ -172,11 +192,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
             else:
                 new_file_content.append(line)
 
-        output_file_path = os.path.join(output_path, f'{name}.md')
-        with open(output_file_path, 'w', encoding='utf-8') as file:
-            file.writelines(new_file_content)
-
-        print(f'File written to {output_file_path}')
+        write_file(output_path, name, new_file_content)
 
     except Exception as e:
         print(e)
