@@ -101,7 +101,7 @@ def add_new_snooze_from_linkedin_messaging():
     global_variables.active_input = True
 
     if current_url.startswith(f'https://www.linkedin.com/messaging/thread/'):
-        default_name, a, b, c, d = linkedin_scrapers.scrape_linkedin_messaging()
+        default_name = linkedin_scrapers.scrape_linkedin_messaging()
         name = input(f'URL Name (default is "{default_name}"): ') or default_name
     elif current_url.startswith(f'https://www.linkedin.com/in/'):
         default_name, a, b, c, d = linkedin_scrapers.scrape_linkedin_profile()
