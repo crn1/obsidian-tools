@@ -44,7 +44,7 @@ def open_file_in_obsidian(file_path):
         uri = f"obsidian://open?vault={vault_name}&file={file_path}"
         webbrowser.open(uri)
     except Exception as e:
-        print(e)
+        print('\n' + e)
 
 open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
