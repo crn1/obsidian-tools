@@ -124,7 +124,7 @@ def add_new_snooze_from_linkedin_messaging():
     description = input('Enter description: ')
 
     try:
-        with open(template_file, "r") as file:
+        with open(template_file, 'r', encoding='utf-8') as file:
             file_content = file.readlines()
 
         new_file_content = []
@@ -177,7 +177,7 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
         return False
 
     try:
-        with open(template_file, "r") as file:
+        with open(template_file, "r", encoding='utf-8') as file:
             file_content = file.readlines()
 
         new_file_content = []
@@ -212,7 +212,7 @@ def search_for_entity(folder_path, check_variable, message_found='', message_not
             # Check if the path is a file and if it has the .md extension
             if os.path.isfile(file_path) and file_name.endswith(".md"):
                 # Read the contents of the file and search for the URL
-                with open(file_path, 'r') as file:
+                with open(file_path, 'r', encoding='utf-8') as file:
                     file_contents = file.read()
 
                     if check_variable in file_contents:
