@@ -1,133 +1,173 @@
 import bs4
 import global_variables
-import unicodedata
+import yaml
 
-def find_experience_section(tag):
+def is_experience_section(tag):
     return tag.name == 'section' and 'Experience' in tag.get_text() and 'Experienced' not in tag.get_text()
+def is_education_section(tag):
+    return tag.name == 'section' and 'Education' in tag.get_text()
 
-def scrape_linkedin_messaging():
+def scrape_value(selector):
     html = global_variables.current_html
-
-    name = ''
-
+    value = ''
     try:
         soup = bs4.BeautifulSoup(html, 'html.parser')
-    except Exception as e:
-        print(e)
-        return name
-
-    try:
-        name = soup.select_one('#thread-detail-jump-target').text.strip()
-        if name:
-            print("Name: " + name)
+        value = soup.select_one(selector).text.strip().replace('\n', '').replace('  ', ' ')
+        # if value:
+        #     print("Value: " + name.text.strip())
     except Exception as e:
         print(e)
 
-    return name
+    return value
 
+def scrape_linkedin_messaging_name():
+    return scrape_value('#thread-detail-jump-target')
 
-def scrape_linkedin_profile():
-    html = global_variables.current_html
+def scrape_linkedin_profile_name():
+    return scrape_value('h1')
+def scrape_linkedin_profile_headline():
+    return scrape_value('#profile-content > div > div > div > div > main > section > div > div > div:nth-child(1) > div.text-body-medium.break-words')
+def scrape_linkedin_profile_location():
+    return scrape_value('#profile-content > div > div > div > div > main > section > div > div > div > span.text-body-small.inline.t-black--light.break-words')
 
-    name = ''
-    headline = ''
-    location = ''
-    company = ''
-    position = ''
+def scrape_linkedin_company_name():
+    return scrape_value('h1')
+def scrape_linkedin_company_description():
+    return scrape_value('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > p')
+def scrape_linkedin_company_location():
+    return scrape_value('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.inline-block > div:nth-child(1)')
+def scrape_linkedin_company_industry():
+    return scrape_value('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.org-top-card-summary-info-list__info-item')
 
-    try:
-        soup = bs4.BeautifulSoup(html, 'html.parser')
-    except Exception as e:
-        print(e)
-        return name, headline, location, company
+def scrape_linkedin_school_name():
+    return scrape_value('h1')
+def scrape_linkedin_school_description():
+    return scrape_value('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > p')
+def scrape_linkedin_school_location():
+    return scrape_value('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.inline-block > div:nth-child(1)')
 
-    try:
-        name = soup.select_one('h1').text.strip()
-        # if name:
-        #     print("Name: " + name.text.strip())
-    except Exception as e:
-        print(e)
-
-    try:
-        headline = soup.select_one('#profile-content > div > div > div > div > main > section > div > div > div:nth-child(1) > div.text-body-medium.break-words').text.strip()
-        # if headline:
-        #     print("Headline: " + headline.text.strip())
-    except Exception as e:
-        print(e)
-
-    try:
-        location = soup.select_one('#profile-content > div > div > div > div > main > section > div > div > div > span.text-body-small.inline.t-black--light.break-words').text.strip()
-        # if location:
-        #     print("Location: " + location.text.strip())
-    except Exception as e:
-        print(e)
+def get_target_section(section_name):
+    target_section = None
 
     try:
         # Find the section containing the text "Experience"
-        experience_section = soup.find(find_experience_section)
+        html = global_variables.current_html
+
+        soup = bs4.BeautifulSoup(html, 'html.parser')
+        sections = soup.select('#profile-content > div > div > div > div > main > section')
+
+        # Search for target section
+        for section in sections:
+            if (section_name == "Experience" and is_experience_section(section)) or (section_name == "Education" and is_education_section(section)):
+                target_section = section
+
+    except Exception as e:
+        print(e)
+
+    return target_section
+
+
+def scrape_linkedin_profile_companies():
+    companies = []
+    current_company_name = ''
+    current_position = ''
+
+    try:
+        experience_section = get_target_section('Experience')
 
         # Check if the section is found
         if experience_section:
-            # Now you can continue with your original CSS selector
-            company = experience_section.select_one('div > ul > li:nth-child(1) > div > div > div > div > span:nth-child(2) > span:nth-child(1)')
-            position = experience_section.select_one('div > ul > li:nth-child(1) > div > div > div > div > div > div > div > div > span:nth-child(1)')
+            # Select all experience items within the section
+            experience_items = experience_section.select('div > ul > li > div > div > div > div')
 
-            # Process the company data as needed
-            if company:
-                company = company.text.split(" · ")[0].strip()
-                # print("Company: " + company)
+            for index, item in enumerate(experience_items):
+                current_company = {'company_name': '', 'position': '', 'duration_start': '', 'duration_end': ''}
 
-            if position:
-                position = position.text.split(" · ")[0].strip()
-                # print("Position: " + position)
+                # Extract company and position from each item
+                company_name = item.select_one('span:nth-child(2) > span:nth-child(1)')
+                position = item.select_one('div > div > div > div > div > span:nth-child(1)')
+                duration = item.select_one('span:nth-child(3) > span')
+
+                # We don't need empty values!
+                if not company_name or not duration:
+                    continue
+
+                if position:
+                    current_company['position'] = position.text.strip().replace('\n', '').replace('  ', ' ')
+
+                current_company['company_name'] = company_name.text.split(" · ")[0].strip().replace('\n', '').replace('  ', ' ')
+
+                duration = duration.text.split(" · ")[0].strip()
+
+                if duration:
+                    current_company['duration_start'] = duration.split(" - ")[0].strip().replace('\n', '').replace('  ', ' ')
+                    current_company['duration_end'] = duration.split(" - ")[1].strip().replace('\n', '').replace('  ', ' ')
+                #if "Present" in duration_end:
+                #    duration_end = ''
+
+                companies.append(current_company)
+
+                if index == 0:
+                    if current_company['company_name']:
+                        current_company_name = current_company['company_name']
+                    if current_company['position']:
+                        current_position = current_company['position']
+
         else:
             print("Experience section not found.")
 
     except Exception as e:
             print(e)
 
-    return name, headline, location, company, position
+    return '\n' + yaml.dump(companies, default_flow_style=False, allow_unicode=True).strip(), current_company_name, current_position
 
-def scrape_linkedin_company():
-    html = global_variables.current_html
-
-    name = ''
-    description = ''
-    location = ''
-    industry = ''
+def scrape_linkedin_profile_education():
+    education = []
+    current_school_name = ''
+    current_degree = ''
 
     try:
-        soup = bs4.BeautifulSoup(html, 'html.parser')
-    except Exception as e:
-        print(e)
-        return name, description, location, industry
+        education_section = get_target_section("Education")
 
-    try:
-        name = soup.select_one('h1').text.strip()
-        # if name:
-        #     print("Name: " + name.text.strip())
-    except Exception as e:
-        print(e)
+        # Check if the section is found
+        if education_section:
+            # Select all experience items within the section
+            education_items = education_section.select('div > ul > li > div > div > div > a')
 
-    try:
-        description = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > p').text.strip()
-        # if description:
-        #     print("Description: " + description.text.strip())
-    except Exception as e:
-        print(e)
+            for index, item in enumerate(education_items):
+                current_education = {'school_name': '', 'degree': '', 'duration_start': '', 'duration_end': ''}
 
-    try:
-        industry = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.org-top-card-summary-info-list__info-item').text.strip()
-        # if industry:
-        #     print("Indsutry: " + industry.text.strip())
-    except Exception as e:
-        print(e)
+                # Extract school name, degree, and duration from each item
+                school_name = item.select_one('div > div > div > div > span:nth-child(1)')
+                degree = item.select_one('span:nth-child(2) > span:nth-child(1)')
+                duration = item.select_one('span:nth-child(3) > span')
 
-    try:
-        location = soup.select_one('* > div.relative > div.ph5.pb5 > div.org-top-card__primary-content.org-top-card-primary-content--zero-height-logo.org-top-card__improved-primary-content--ia > div.block.mt2 > div > div > div.inline-block > div:nth-child(1)').text.strip()
-        # if location:
-        #     print("Location: " + location)
-    except Exception as e:
-        print(e)
+                # We don't need empty values!
+                if not school_name or not duration:
+                    continue
 
-    return name, description, location, industry
+                if degree:
+                    current_education['degree'] = degree.text.strip().replace('\n', '').replace('  ', ' ')
+
+                current_education['school_name'] = school_name.text.split(" · ")[0].strip().replace('\n', '').replace('  ', ' ')
+
+                current_education['duration_start'] = duration.text.split(" - ")[0].strip().replace('\n', '').replace('  ', ' ')
+                current_education['duration_end'] = duration.text.split(" - ")[1].strip().replace('\n', '').replace('  ', ' ')
+                #if "Present" in duration_end:
+                #    duration_end = ''
+
+                education.append(current_education)
+
+                if index == 0:
+                    current_school_name = current_education['school_name']
+
+                    if current_education['degree']:
+                        current_degree = current_education['degree']
+
+        else:
+            print("Education section not found.")
+
+    except Exception as e:
+            print(e)
+
+    return '\n' + yaml.dump(education, default_flow_style=False, allow_unicode=True).strip(), current_school_name, current_degree

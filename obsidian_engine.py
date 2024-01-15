@@ -51,8 +51,10 @@ open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_tal
 def open_linkedin_file_in_obsidian(search_for_talent=True):
     current_url = global_variables.current_url
 
-    if current_url.startswith('https://www.linkedin.com/company'):
+    if current_url.startswith('https://www.linkedin.com/company/'):
         folder_path = global_variables.obsidian_companies_path
+    elif current_url.startswith('https://www.linkedin.com/school/'):
+        folder_path = global_variables.obsidian_schools_path
     elif current_url.startswith('https://www.linkedin.com/messaging/thread/'):
         folder_path = global_variables.obsidian_snoozes_path
     elif current_url.startswith('https://www.linkedin.com/in/'):
@@ -101,13 +103,13 @@ def add_new_snooze_from_linkedin_messaging():
     global_variables.active_input = True
 
     if current_url.startswith(f'https://www.linkedin.com/messaging/thread/'):
-        default_name = linkedin_scrapers.scrape_linkedin_messaging()
+        default_name = linkedin_scrapers.scrape_linkedin_messaging_name()
         name = input(f'URL Name (default is "{default_name}"): ') or default_name
     elif current_url.startswith(f'https://www.linkedin.com/in/'):
-        default_name, a, b, c, d = linkedin_scrapers.scrape_linkedin_profile()
+        default_name = linkedin_scrapers.scrape_linkedin_profile_name()
         name = input(f'URL Name (default is "{default_name}"): ') or default_name
     elif current_url.startswith(f'https://www.linkedin.com/company/'):
-        default_name, a, b, c = linkedin_scrapers.scrape_linkedin_company()
+        default_name = linkedin_scrapers.scrape_linkedin_company_name()
         name = input(f'URL Name (default is "{default_name}"): ') or default_name
     else:
         name = input('URL Name: ')
@@ -149,24 +151,51 @@ def add_new_snooze_from_linkedin_messaging():
     global_variables.active_input = False
 
 def add_new_contact_from_linkedin():
-    name, headline, location, company_name, position = linkedin_scrapers.scrape_linkedin_profile()
+    name = linkedin_scrapers.scrape_linkedin_profile_name()
+    headline = linkedin_scrapers.scrape_linkedin_profile_headline()
+    location = linkedin_scrapers.scrape_linkedin_profile_location()
+    companies, company, position = linkedin_scrapers.scrape_linkedin_profile_companies()
+    education, university, degree = linkedin_scrapers.scrape_linkedin_profile_education()
+
     output_path = global_variables.obsidian_contacts_path
     template_file = global_variables.obsidian_contact_template_path
-    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name, position=position)
+
+    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, companies=companies, company=company, position=position, education=education, university=university, degree=degree)
 
 def add_new_talent_from_linkedin():
-    name, headline, location, company_name, position = linkedin_scrapers.scrape_linkedin_profile()
+    name = linkedin_scrapers.scrape_linkedin_profile_name()
+    headline = linkedin_scrapers.scrape_linkedin_profile_headline()
+    location = linkedin_scrapers.scrape_linkedin_profile_location()
+    companies, company, position = linkedin_scrapers.scrape_linkedin_profile_companies()
+    education, university, degree = linkedin_scrapers.scrape_linkedin_profile_education()
+
     output_path = global_variables.obsidian_talents_path
     template_file = global_variables.obsidian_talent_template_path
-    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, company_name=company_name, position=position)
+
+    add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, companies=companies, company=company, position=position, education=education, university=university, degree=degree)
 
 def add_new_company_from_linkedin():
-    name, description, location, industry = linkedin_scrapers.scrape_linkedin_company()
+    name = linkedin_scrapers.scrape_linkedin_company_name()
+    description = linkedin_scrapers.scrape_linkedin_company_description()
+    location = linkedin_scrapers.scrape_linkedin_company_location()
+    industry = linkedin_scrapers.scrape_linkedin_company_industry()
+
     output_path = global_variables.obsidian_companies_path
     template_file = global_variables.obsidian_company_template_path
+
     add_new_entity_from_linkedin('company/', output_path, template_file, name=name, description=description, location=location, industry=industry)
 
-def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_file, name='', headline='', location='', company_name='', description='', industry='', position=''):
+def add_new_school_from_linkedin():
+    name = linkedin_scrapers.scrape_linkedin_school_name()
+    description = linkedin_scrapers.scrape_linkedin_school_description()
+    location = linkedin_scrapers.scrape_linkedin_school_location()
+
+    output_path = global_variables.obsidian_schools_path
+    template_file = global_variables.obsidian_school_template_path
+
+    add_new_entity_from_linkedin('school/', output_path, template_file, name=name, description=description, location=location)
+
+def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_file, name='', headline='', location='', company='', companies='', description='', industry='', position='', education='', university='', degree=''):
     current_url = global_variables.current_url
     if not current_url.startswith(f'https://www.linkedin.com/{linkedin_starts_with}'):
         print("Error: You're not on valid LinkedIn URL for this action!")
@@ -186,8 +215,10 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
                 new_file_content.append(f'LinkedIn: {current_url}\n')
             elif "Location: " in line and location:
                 new_file_content.append(f'Location: {location}\n')
-            elif "Company: " in line and company_name:
-                new_file_content.append(f'Company: {company_name}\n')
+            elif "Company: " in line and company:
+                new_file_content.append(f'Company: {company}\n')
+            elif "Companies: " in line and companies:
+                new_file_content.append(f'Companies: {companies}\n')
             elif "Headline: " in line and headline:
                 new_file_content.append(f'Headline: {headline}\n')
             elif "Description: " in line and description:
@@ -196,6 +227,12 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
                 new_file_content.append(f'Industry: {industry}\n')
             elif "Position: " in line and position:
                 new_file_content.append(f'Position: {position}\n')
+            elif "Education: " in line and education:
+                new_file_content.append(f'Education: {education}\n')
+            elif "University: " in line and university:
+                new_file_content.append(f'University: {university}\n')
+            elif "Degree: " in line and degree:
+                new_file_content.append(f'Degree: {degree}\n')
             else:
                 new_file_content.append(line)
 
