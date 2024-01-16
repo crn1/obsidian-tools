@@ -2,12 +2,11 @@ import os
 import global_variables
 import time
 import linkedin_scrapers
-import re
-from dateutil.parser import parse
 import webbrowser
 
 open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
+open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
 def write_file(output_path, name, new_file_content):
     """Writes content to a file, ensuring a unique filename if a file with the same name already exists.
@@ -45,8 +44,6 @@ def open_file_in_obsidian(file_path):
         webbrowser.open(uri)
     except Exception as e:
         print('\n' + e)
-
-open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
 def open_linkedin_file_in_obsidian(search_for_talent=True):
     current_url = global_variables.current_url

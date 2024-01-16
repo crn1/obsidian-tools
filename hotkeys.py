@@ -1,5 +1,6 @@
 import keyboard
 import obsidian_engine
+import obsidian_colleagues_and_alumni
 import console
 
 def add_hotkeys():
@@ -20,3 +21,6 @@ def add_hotkeys():
 
     keyboard.add_hotkey("Ctrl+Alt+X", obsidian_engine.open_interesting_links_in_obsidian)
     keyboard.add_hotkey("Alt+X", obsidian_engine.open_ideas_in_obsidian)
+
+    #keyboard.add_hotkey("Ctrl+.", obsidian_engine.open_interesting_links_in_obsidian)
+    keyboard.add_hotkey("Ctrl+Alt+.", obsidian_colleagues_and_alumni.update_all_colleagues_and_alumni)
