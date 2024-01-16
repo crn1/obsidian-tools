@@ -4,6 +4,7 @@ import time
 import linkedin_scrapers
 import webbrowser
 import yaml
+from dateutil.parser import parse
 
 open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
@@ -120,7 +121,7 @@ def add_new_snooze_from_linkedin_messaging():
         except Exception as e:
             print(e)
 
-    tag = input('Enter tags: ')
+    tags = input('Enter tags: ')
     description = input('Enter description: ')
 
     try:
@@ -141,8 +142,8 @@ def add_new_snooze_from_linkedin_messaging():
                 new_file_content.append(f'Link: {current_url}\n')
             elif "Date: " in line:
                 new_file_content.append(f'Date: {date}\n')
-            elif "Tag: " in line:
-                new_file_content.append(f'Tag: {tag}\n')
+            elif "Tags: " in line:
+                new_file_content.append(f'Tags: {tags}\n')
             elif "Description: " in line:
                 new_file_content.append(f'Description: {description}\n')
             else:

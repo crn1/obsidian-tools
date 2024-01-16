@@ -1,2 +1,1 @@
-- lorem upsum
-- 
+- 'NoneType' when current_url = '', fix this
