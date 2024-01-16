@@ -255,40 +255,9 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
         if degree:
             frontmatter_dict['Degree'] = degree
 
-        # Reverse the dict
-        # frontmatter_dict = {k: frontmatter_dict[k] for k in sorted(frontmatter_dict, key=lambda x: list(frontmatter_dict.keys()).index(x), reverse=True)}
-
         updated_frontmatter_string = yaml.dump(frontmatter_dict, default_flow_style=False).replace('null', '')
         #print(updated_frontmatter_string)
         updated_content = ['---\n'] + updated_frontmatter_string.splitlines(keepends=True) + ['---\n'] + content_lines
-
-        # Making new file...
-        #new_file_content = []
-        #for line in file_content:
-        #    if "LinkedIn: " in line:
-        #        new_file_content.append(f'LinkedIn: {current_url}\n')
-        #    elif "Location: " in line and location:
-        #        new_file_content.append(f'Location: {location}\n')
-        #    elif "Company: " in line and company:
-        #        new_file_content.append(f'Company: {company}\n')
-        #    elif "Companies: " in line and companies:
-        #        new_file_content.append(f'Companies: {companies}\n')
-        #    elif "Headline: " in line and headline:
-        #        new_file_content.append(f'Headline: {headline}\n')
-        #    elif "Description: " in line and description:
-        #        new_file_content.append(f'Description: {description}\n')
-        #    elif "Industry: " in line and industry:
-        #        new_file_content.append(f'Industry: {industry}\n')
-        #    elif "Position: " in line and position:
-        #        new_file_content.append(f'Position: {position}\n')
-        #    elif "Education: " in line and education:
-        #        new_file_content.append(f'Education: {education}\n')
-        #    elif "University: " in line and university:
-        #        new_file_content.append(f'University: {university}\n')
-        #    elif "Degree: " in line and degree:
-        #        new_file_content.append(f'Degree: {degree}\n')
-        #    else:
-        #        new_file_content.append(line)
 
         write_file(output_path, name, updated_content, update_file=update_file)
 
@@ -321,7 +290,7 @@ def search_for_entity(folder_path, check_variable, message_found='', message_not
 
 def obsidian_checker():
     while True:
-        time.sleep(1)
+        time.sleep(0.7)
 
         if not global_variables.active_input:
 

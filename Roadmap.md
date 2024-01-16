@@ -1,1 +1,2 @@
 - 'NoneType' when current_url = '', fix this
+- scrape when multiple positions held on LinkedIn
