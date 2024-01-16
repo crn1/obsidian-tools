@@ -1,6 +1,5 @@
 import bs4
 import global_variables
-import yaml
 
 def is_experience_section(tag):
     return tag.name == 'section' and 'Experience' in tag.get_text() and 'Experienced' not in tag.get_text()
@@ -124,7 +123,7 @@ def scrape_linkedin_profile_companies():
             print(e)
 
     if companies:
-        return '\n' + yaml.dump(companies, default_flow_style=False, allow_unicode=True).strip(), current_company_name, current_position
+        return companies, current_company_name, current_position
     else:
         return '', current_company_name, current_position
 
@@ -181,6 +180,6 @@ def scrape_linkedin_profile_education():
             print(e)
 
     if education:
-        return '\n' + yaml.dump(education, default_flow_style=False, allow_unicode=True).strip(), current_school_name, current_degree
+        return education, current_school_name, current_degree
     else:
         return '', current_school_name, current_degree

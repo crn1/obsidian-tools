@@ -167,6 +167,8 @@ def update_all_colleagues_and_alumni():
 def update_colleagues_and_alumni(person_path):
     global_variables.active_input = True
 
+    print('Started updating colleagues and alumni . . .')
+
     companies_path = global_variables.obsidian_companies_path
     schools_path = global_variables.obsidian_schools_path
 
@@ -210,9 +212,11 @@ def update_colleagues_and_alumni(person_path):
 
             # Print something in case the vault becomes too large
             if current_file_index % 100 == 0 and current_file_index > 100:
-                print('Updated 100 companies')
+                print('Updated 100 companies, standby while the process is finished . . .')
 
     except Exception as e:
         print(e)
 
+    print('Finished updating colleagues and alumni.')
     global_variables.active_input = False
+

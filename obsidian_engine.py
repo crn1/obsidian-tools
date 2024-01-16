@@ -3,12 +3,13 @@ import global_variables
 import time
 import linkedin_scrapers
 import webbrowser
+import yaml
 
 open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
 open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
-def write_file(output_path, name, new_file_content):
+def write_file(output_path, name, new_file_content, update_file=False):
     """Writes content to a file, ensuring a unique filename if a file with the same name already exists.
 
     Args:
@@ -16,21 +17,21 @@ def write_file(output_path, name, new_file_content):
         name (str): The base name of the file (without extension).
         new_file_content (str): The content to write to the file.
     """
-
-    base_filename = f"{name}.md"
+    base_filename = f'{name}.md' if not name.endswith('.md') else name
     file_path = os.path.join(output_path, base_filename)
 
-    i = 1
-    while os.path.exists(file_path):
-        filename, extension = os.path.splitext(base_filename)
-        unique_filename = f"{filename} - {i}{extension}"
-        file_path = os.path.join(output_path, unique_filename)
-        i += 1
+    if not update_file:
+        i = 1
+        while os.path.exists(file_path):
+            filename, extension = os.path.splitext(base_filename)
+            unique_filename = f"{filename} - {i}{extension}"
+            file_path = os.path.join(output_path, unique_filename)
+            i += 1
 
     with open(file_path, 'w', encoding='utf-8') as file:
         file.writelines(new_file_content)
 
-    print(f'File written to {file_path}')
+    print(f'File written to {file_path}\n')
 
 def open_file_in_obsidian(file_path):
     try:
@@ -123,6 +124,14 @@ def add_new_snooze_from_linkedin_messaging():
     description = input('Enter description: ')
 
     try:
+
+        update_file = False
+        if search_for_entity(output_path, current_url):
+            print("The snooze is already in the system, updating the file instead.")
+            template_file = search_for_entity(output_path, current_url)
+            output_path, name = os.path.split(template_file)
+            update_file = True
+
         with open(template_file, 'r', encoding='utf-8') as file:
             file_content = file.readlines()
 
@@ -139,7 +148,7 @@ def add_new_snooze_from_linkedin_messaging():
             else:
                 new_file_content.append(line)
 
-        write_file(output_path, name, new_file_content)
+        write_file(output_path, name, new_file_content, update_file)
 
     except Exception as e:
         print(e)
@@ -194,46 +203,93 @@ def add_new_school_from_linkedin():
 
 def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_file, name='', headline='', location='', company='', companies='', description='', industry='', position='', education='', university='', degree=''):
     current_url = global_variables.current_url
+
     if not current_url.startswith(f'https://www.linkedin.com/{linkedin_starts_with}'):
         print("Error: You're not on valid LinkedIn URL for this action!")
         return False
 
-    if search_for_entity(output_path, current_url):
-        print("Error: The entity is already in the system for this action!")
-        return False
+    update_file = False
 
     try:
+        # If the file is found, we're going to work with the found file and update it
+        if search_for_entity(output_path, current_url):
+            print("The entity is already in the system for this action, updating the file instead.")
+            template_file = search_for_entity(output_path, current_url)
+            output_path, name = os.path.split(template_file)
+            update_file = True
+
+        file_content = ''
+        # We're opening the template_file which can either be the one passed from the arg or modified in the code above
         with open(template_file, "r", encoding='utf-8') as file:
             file_content = file.readlines()
 
-        new_file_content = []
-        for line in file_content:
-            if "LinkedIn: " in line:
-                new_file_content.append(f'LinkedIn: {current_url}\n')
-            elif "Location: " in line and location:
-                new_file_content.append(f'Location: {location}\n')
-            elif "Company: " in line and company:
-                new_file_content.append(f'Company: {company}\n')
-            elif "Companies: " in line and companies:
-                new_file_content.append(f'Companies: {companies}\n')
-            elif "Headline: " in line and headline:
-                new_file_content.append(f'Headline: {headline}\n')
-            elif "Description: " in line and description:
-                new_file_content.append(f'Description: {description}\n')
-            elif "Industry: " in line and industry:
-                new_file_content.append(f'Industry: {industry}\n')
-            elif "Position: " in line and position:
-                new_file_content.append(f'Position: {position}\n')
-            elif "Education: " in line and education:
-                new_file_content.append(f'Education: {education}\n')
-            elif "University: " in line and university:
-                new_file_content.append(f'University: {university}\n')
-            elif "Degree: " in line and degree:
-                new_file_content.append(f'Degree: {degree}\n')
-            else:
-                new_file_content.append(line)
+        # Find the index of the SECOND "---\n" delimiter:
+        frontmatter_end_index = file_content.index("---\n", file_content.index("---\n") + 1) + 1
+        frontmatter_lines = file_content[:frontmatter_end_index]
+        content_lines = file_content[frontmatter_end_index:]
 
-        write_file(output_path, name, new_file_content)
+        frontmatter_string = "".join(frontmatter_lines).replace('---\n', '')
+        frontmatter_dict = yaml.safe_load(frontmatter_string)
+        #print(frontmatter_dict)
+
+        frontmatter_dict['LinkedIn'] = current_url
+        if location:
+            frontmatter_dict['Location'] = location
+        if company:
+            frontmatter_dict['Company'] = company
+        if companies:
+            frontmatter_dict['Companies'] = companies
+        if headline:
+            frontmatter_dict['Headline'] = headline
+        if description:
+            frontmatter_dict['Description'] = description
+        if industry:
+            frontmatter_dict['Industry'] = industry
+        if position:
+            frontmatter_dict['Position'] = position
+        if education:
+            frontmatter_dict['Education'] = education
+        if university:
+            frontmatter_dict['University'] = university
+        if degree:
+            frontmatter_dict['Degree'] = degree
+
+        # Reverse the dict
+        # frontmatter_dict = {k: frontmatter_dict[k] for k in sorted(frontmatter_dict, key=lambda x: list(frontmatter_dict.keys()).index(x), reverse=True)}
+
+        updated_frontmatter_string = yaml.dump(frontmatter_dict, default_flow_style=False).replace('null', '')
+        #print(updated_frontmatter_string)
+        updated_content = ['---\n'] + updated_frontmatter_string.splitlines(keepends=True) + ['---\n'] + content_lines
+
+        # Making new file...
+        #new_file_content = []
+        #for line in file_content:
+        #    if "LinkedIn: " in line:
+        #        new_file_content.append(f'LinkedIn: {current_url}\n')
+        #    elif "Location: " in line and location:
+        #        new_file_content.append(f'Location: {location}\n')
+        #    elif "Company: " in line and company:
+        #        new_file_content.append(f'Company: {company}\n')
+        #    elif "Companies: " in line and companies:
+        #        new_file_content.append(f'Companies: {companies}\n')
+        #    elif "Headline: " in line and headline:
+        #        new_file_content.append(f'Headline: {headline}\n')
+        #    elif "Description: " in line and description:
+        #        new_file_content.append(f'Description: {description}\n')
+        #    elif "Industry: " in line and industry:
+        #        new_file_content.append(f'Industry: {industry}\n')
+        #    elif "Position: " in line and position:
+        #        new_file_content.append(f'Position: {position}\n')
+        #    elif "Education: " in line and education:
+        #        new_file_content.append(f'Education: {education}\n')
+        #    elif "University: " in line and university:
+        #        new_file_content.append(f'University: {university}\n')
+        #    elif "Degree: " in line and degree:
+        #        new_file_content.append(f'Degree: {degree}\n')
+        #    else:
+        #        new_file_content.append(line)
+
+        write_file(output_path, name, updated_content, update_file=update_file)
 
     except Exception as e:
         print(e)
