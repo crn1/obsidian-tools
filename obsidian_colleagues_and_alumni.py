@@ -45,7 +45,10 @@ def update_the_file_with_new_matched_arrays(matched_colleagues, matched_alumni, 
 
             # Append new alumni section
             if matched_alumni:
-                current_file.write("### Alumni")
+                if matched_colleagues:
+                    current_file.write("\n\n### Alumni")
+                else:
+                    current_file.write("### Alumni")
                 for alum in matched_alumni:
                     current_file.write(alum)
         else:
