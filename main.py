@@ -16,7 +16,7 @@ http_server_thread = Thread(target=chrome_engine.start_chrome_engine)
 http_server_thread.start()
 
 obsidian_thread = Thread(target=obsidian_engine.obsidian_checker)
-obsidian_thread.start()
+# obsidian_thread.start()
 
 # Wait for both threads to finish
 http_server_thread.join()

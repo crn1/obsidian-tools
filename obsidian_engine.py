@@ -255,8 +255,8 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
         if degree:
             frontmatter_dict['Degree'] = degree
 
-        updated_frontmatter_string = yaml.dump(frontmatter_dict, default_flow_style=False).replace('null', '')
-        #print(updated_frontmatter_string)
+        updated_frontmatter_string = yaml.dump(frontmatter_dict, default_flow_style=False, allow_unicode=True).replace('null', '')
+        print(updated_frontmatter_string)
         updated_content = ['---\n'] + updated_frontmatter_string.splitlines(keepends=True) + ['---\n'] + content_lines
 
         write_file(output_path, name, updated_content, update_file=update_file)

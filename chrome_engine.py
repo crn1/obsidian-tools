@@ -15,6 +15,7 @@ def update_global_variables(data):
             # One-line string
             global_variables.current_url = data
             global_variables.current_html = ''
+
     except Exception as e:
         print(e)
 
