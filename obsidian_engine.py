@@ -290,18 +290,20 @@ def search_for_entity(folder_path, check_variable, message_found='', message_not
 
 def obsidian_checker():
     while True:
+        current_url = global_variables.current_url
         time.sleep(0.7)
 
-        if not global_variables.active_input:
+        if current_url != global_variables.current_url:
+            if not global_variables.active_input:
 
-            os.system('cls')
-            print(f'Current URL: {global_variables.current_url}\n')
+                os.system('cls')
+                print(f'Current URL: {global_variables.current_url}\n')
 
-            if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
-                search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
-                print('')
-                search_for_entity(global_variables.obsidian_contacts_path, global_variables.current_url, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
-            elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
-                search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
-            elif global_variables.current_url.startswith("https://www.linkedin.com/messaging/thread/"):
-                search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ ✅ ✅ IS IN SNOOZE", "❌ ❌ ❌ NOT IN SNOOZE")
+                if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
+                    search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
+                    print('')
+                    search_for_entity(global_variables.obsidian_contacts_path, global_variables.current_url, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
+                elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
+                    search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
+                elif global_variables.current_url.startswith("https://www.linkedin.com/messaging/thread/"):
+                    search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ ✅ ✅ IS IN SNOOZE", "❌ ❌ ❌ NOT IN SNOOZE")
