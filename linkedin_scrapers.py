@@ -108,13 +108,19 @@ def scrape_linkedin_profile_companies():
                 #if "Present" in duration_end:
                 #    duration_end = ''
 
-                companies.append(current_company)
+                # We don't need empty values! Again!
+                if not current_company['Name']:
+                    continue
 
+                # Why tf is this code here, I don't know
                 if index == 0:
                     if current_company['Name']:
                         current_company_name = current_company['Name']
                     if current_company['Position']:
                         current_position = current_company['Position']
+
+                # Finally, append everything to companies list
+                companies.append(current_company)
 
         else:
             print("Experience section not found.")

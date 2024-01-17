@@ -1,2 +1,9 @@
 - 'NoneType' when current_url = '', fix this
 - scrape when multiple positions held on LinkedIn
+- update global_variables with os.apth.join and is that even necessary?
+- double college comparasion bug
+- compare names AND degrees of colleges when comparing alumni
+- move more functions to obsidian_common
+- how many people in company scraper
+- forbidden char (eg. '|')
+- companies/ empty bug

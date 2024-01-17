@@ -1,5 +1,4 @@
 # Define global variables that will be used a lot
-
 current_url = ""
 current_html = ""
 
