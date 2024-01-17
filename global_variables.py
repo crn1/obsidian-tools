@@ -24,3 +24,11 @@ obsidian_school_template_path = obsidian_vault_path + "Templates\\School.md"
 
 obsidian_snoozes_path = obsidian_vault_path + "CRM\\Snoozes\\"
 obsidian_snooze_template_path = obsidian_vault_path + "Templates\\Snooze.md"
+
+forbidden_company_names = [
+'',
+'Freelance',
+'Freelancer.com',
+'Upwork',
+'Sole Proprietor'
+]

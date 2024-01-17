@@ -7,3 +7,4 @@
 - how many people in company scraper
 - forbidden char (eg. '|')
 - companies/ empty bug
+- Sole Proprietor, Freelancer.com, etc. forbid as companies and don't parse

@@ -110,7 +110,8 @@ def compare_durations(current_organizations, comparasion_organizations, person_p
             for current_organization in current_organizations:
                 for comparasion_organization in comparasion_organizations:
 
-                    if current_organization['Name'] == comparasion_organization['Name'] and current_organization['Name']:
+                    if current_organization['Name'] == comparasion_organization['Name'] and \
+                        current_organization['Name'] not in global_variables.forbidden_company_names:
 
                         current_duration_start = current_organization['StartDate']
                         comparasion_duration_start = comparasion_organization['StartDate']
