@@ -162,7 +162,7 @@ def get_frontmatter_property(content, property_name, is_list=False):
 
 # This function will be called from hotkeys.py
 def update_colleagues_and_alumni_for_all_files():
-    compare_all_files_with_all_others(global_variables.obsidian_contacts_path)
+    compare_all_files_with_all_others(global_variables.obsidian_connections_path)
     compare_all_files_with_all_others(global_variables.obsidian_talents_path)
 
 def update_colleagues_and_alumni_for_single_file():
@@ -189,6 +189,7 @@ def compare_single_file_with_all_others():
 
 def compare_all_files_with_all_others(person_path):
     global_variables.active_input = True
+    os.system('cls')
     print('Started updating colleagues and alumni . . .')
 
     try:

@@ -1,10 +1,19 @@
 - 'NoneType' when current_url = '', fix this
-- scrape when multiple positions held on LinkedIn
+- ~~scrape when multiple positions held on LinkedIn~~
 - update global_variables with os.apth.join and is that even necessary?
 - double college comparasion bug
 - compare names AND degrees of colleges when comparing alumni
 - move more functions to obsidian_common
-- how many people in company scraper
+- how many people in company scraper !!
 - forbidden char (eg. '|')
 - companies/ empty bug
-- Sole Proprietor, Freelancer.com, etc. forbid as companies and don't parse
+- ~~Sole Proprietor, Freelancer.com, etc. forbid as companies and don't parse~~
+- shortcut for snooze when /linkedin/in is open
+- tomorrow / today / yesterday -> better fuzzy for date
+- URL name aesthetics (print(''))
+- Volunteering? support for this as well
+- ~~Prospects? Howe to differ prospects from contacts?~~
+- Remove "/people" from the link including when search_for_entity
+- What date is parsed when Alt+M?
+- Automatically focus window when Alt+M
+- entity_name and see what is the tag

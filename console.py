@@ -14,3 +14,4 @@ def show_console():
 def clear_console():
     os.system('cls')
     print('* * * Obsidian Tools v1 by crn1 * * *')
+    print('Alt + Q to list all hotkeys')

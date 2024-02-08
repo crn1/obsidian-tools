@@ -8,7 +8,7 @@ from dateutil.parser import parse
 
 open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_interesting_links_path)
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
-open_contact_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
+open_connection_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
 def write_file(output_path, name, new_file_content, update_file=False):
     """Writes content to a file, ensuring a unique filename if a file with the same name already exists.
@@ -60,7 +60,7 @@ def open_linkedin_file_in_obsidian(search_for_talent=True):
         if search_for_talent:
             folder_path = global_variables.obsidian_talents_path
         else:
-            folder_path = global_variables.obsidian_contacts_path
+            folder_path = global_variables.obsidian_connections_path
     else:
         print('Error: The link is not supported for opening!')
         return False
@@ -157,15 +157,15 @@ def add_new_snooze_from_linkedin_messaging():
 
     global_variables.active_input = False
 
-def add_new_contact_from_linkedin():
+def add_new_connection_from_linkedin():
     name = linkedin_scrapers.scrape_linkedin_profile_name()
     headline = linkedin_scrapers.scrape_linkedin_profile_headline()
     location = linkedin_scrapers.scrape_linkedin_profile_location()
     companies, company, position = linkedin_scrapers.scrape_linkedin_profile_companies()
     education, university, degree = linkedin_scrapers.scrape_linkedin_profile_education()
 
-    output_path = global_variables.obsidian_contacts_path
-    template_file = global_variables.obsidian_contact_template_path
+    output_path = global_variables.obsidian_connections_path
+    template_file = global_variables.obsidian_connection_template_path
 
     add_new_entity_from_linkedin('in/', output_path, template_file, name=name, headline=headline, location=location, companies=companies, company=company, position=position, education=education, university=university, degree=degree)
 
@@ -300,10 +300,11 @@ def obsidian_checker():
                 print(f'Current URL: {global_variables.current_url}\n')
 
                 if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
-                    search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ ✅ ✅ ALREADY IN TALENT POOL", "❌ ❌ ❌ NOT IN TALENT POOL")
+                    search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ IS IN TALENT POOL", "❌ NOT IN TALENT POOL")
                     print('')
-                    search_for_entity(global_variables.obsidian_contacts_path, global_variables.current_url, "✅ ✅ ✅ IS CONTACT", "❌ ❌ ❌ NOT CONTACT")
+                    search_for_entity(global_variables.obsidian_connections_path, global_variables.current_url, "✅ IS IN CRM\n", "❌ NOT IN CRM\n")
                 elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
-                    search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ ✅ ✅ IS IN CRM", "❌ ❌ ❌ NOT IN CRM")
-                elif global_variables.current_url.startswith("https://www.linkedin.com/messaging/thread/"):
-                    search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ ✅ ✅ IS IN SNOOZE", "❌ ❌ ❌ NOT IN SNOOZE")
+                    search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ IS IN CRM\n", "❌ NOT IN CRM\n")
+
+                # Search for snooze anyway, always
+                search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ IS IN SNOOZE", "❌ NOT IN SNOOZE")
