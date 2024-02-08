@@ -10,6 +10,16 @@ open_interesting_links_in_obsidian = lambda: open_file_in_obsidian(global_variab
 open_ideas_in_obsidian = lambda: open_file_in_obsidian(global_variables.obsidian_ideas_path)
 open_connection_in_obsidian = lambda: open_linkedin_file_in_obsidian(search_for_talent=False)
 
+def company_url_specific_comparasion(company_url):
+    if company_url.startswith('https://www.linkedin.com/company/'):
+        if company_url.endswith('/jobs/') or company_url.endswith('/about/') or company_url.endswith('/people/'):
+            return True
+
+    return False
+
+def normalize_company_url(company_url):
+    return company_url.replace('/people/', '/').replace('/jobs/', '/').replace('/about/', '/')
+
 def write_file(output_path, name, new_file_content, update_file=False):
     """Writes content to a file, ensuring a unique filename if a file with the same name already exists.
 
@@ -233,7 +243,11 @@ def add_new_entity_from_linkedin(linkedin_starts_with, output_path, template_fil
         frontmatter_dict = yaml.safe_load(frontmatter_string)
         #print(frontmatter_dict)
 
-        frontmatter_dict['LinkedIn'] = current_url
+        if company_url_specific_comparasion(current_url):
+            frontmatter_dict['LinkedIn'] = normalize_company_url(current_url)
+        else:
+            frontmatter_dict['LinkedIn'] = current_url
+
         if location:
             frontmatter_dict['Location'] = location
         if company:
@@ -274,6 +288,10 @@ def search_for_entity(folder_path, check_variable, message_found='', message_not
                 # Read the contents of the file and search for the URL
                 with open(file_path, 'r', encoding='utf-8') as file:
                     file_contents = file.read()
+
+                    # SpecificCompany comparasion
+                    if company_url_specific_comparasion(check_variable):
+                        check_variable = normalize_company_url(check_variable)
 
                     if check_variable in file_contents:
                         if print_message:

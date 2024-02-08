@@ -13,7 +13,7 @@
 - URL name aesthetics (print(''))
 - Volunteering? support for this as well
 - ~~Prospects? Howe to differ prospects from contacts?~~
-- Remove "/people" from the link including when search_for_entity
+- ~~Remove "/people" from the link including when search_for_entity~~
 - What date is parsed when Alt+M?
 - Automatically focus window when Alt+M
 - entity_name and see what is the tag
