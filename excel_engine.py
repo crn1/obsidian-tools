@@ -90,7 +90,14 @@ def append_company_to_database():
         location = linkedin_scrapers.scrape_linkedin_company_location()
         industry = linkedin_scrapers.scrape_linkedin_company_industry()
 
-        company_url = input('\n➡️ Enter the Company URL: ')
+        while True:
+            company_url = input('\n➡️ Enter the Company URL: ')
+            if web_common.is_valid_url(company_url):
+                company_url = web_common.extract_home_link(company_url)
+                break
+            else:
+                print('\n❌ The URL that you entered is not valid. Please try again.')
+
         tags = input('\n➡️ Enter tags: ')
 
         values = [company_name, company_url, about, industry, location, company_url, tags]
@@ -113,8 +120,27 @@ def append_careers_page_to_database():
         careers_url = global_variables.current_url
         home_url = web_common.extract_home_link(careers_url)
 
-        values = [careers_url, home_url]
+        values = [home_url, careers_url]
         append_row(companies_database_path, values, 'Careers Pages')
 
     except Exception as e:
         print(f'Error: {e}')
+
+def get_rows(file_path, target_sheet):
+    try:
+        # Load the workbook
+        wb = load_workbook(file_path)
+
+        # Check if "Careers Page" sheet exists
+        if target_sheet in wb.sheetnames:
+            # Get the "Careers Page" sheet
+            sheet = wb[target_sheet]
+            return sheet.iter_rows(values_only=True)
+
+        else:
+            print(f"\nError: Sheet {target_sheet} not found in the Excel file.")
+
+    except Exception as e:
+        print(f"\nError: {e}")
+
+    return []

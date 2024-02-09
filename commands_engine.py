@@ -1,5 +1,6 @@
 import os
 import global_variables
+import web_engine
 
 from keyboard import add_hotkey
 from obsidian_engine import *
@@ -22,7 +23,7 @@ def print_commands():
     print(f'{global_variables.app_title}\nList of Commands\n{global_variables.app_separator}')
 
     for command in commands:
-        if commands[command]['hotkey']:
+        if commands[command]['commands']:
             name = commands[command]['name']
             command_list = str(commands[command]['commands'])
             print(f'{name} - {command_list}')
@@ -37,7 +38,7 @@ def parse_command():
             global_variables.active_input = False
             return True
 
-    print('\n ❌ Command not recognized. Please try again.')
+    print('\n❌ Command not recognized. Please try again.')
     global_variables.active_input = False
     return False
 
@@ -157,9 +158,17 @@ commands = {
     },
     'ap_cp_to_db': {
         'commands': ['acptd'],
-        'name': 'actd',
+        'name': 'Append Careers Page to Database',
         'hotkey': 'Alt+P',
         'function': append_careers_page_to_database
+    },
+
+    # EXCEL/WEB OPERATIONS
+    'ch_for_v': {
+        'commands': ['cfv', 'ch for v', 'check for vacancies', 'sfv', 'search for vacancies'],
+        'name': 'Check for Vacancies from Database',
+        'hotkey': '',
+        'function': web_engine.search_for_vacancies
     },
 
     # COLLEAGUES AND ALUMNI OPERATIONS
