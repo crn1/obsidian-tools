@@ -25,6 +25,8 @@ obsidian_school_template_path = obsidian_vault_path + "Templates\\School.md"
 obsidian_snoozes_path = obsidian_vault_path + "CRM\\Snoozes\\"
 obsidian_snooze_template_path = obsidian_vault_path + "Templates\\Snooze.md"
 
+obsidian_companies_database_path = obsidian_vault_path + "CRM\\Companies Database.xlsx"
+
 forbidden_company_names = [
 '', #Company name cannot be empty!
 'Freelance',

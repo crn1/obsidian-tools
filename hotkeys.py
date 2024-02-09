@@ -2,6 +2,7 @@ import os
 
 from keyboard import add_hotkey
 from obsidian_engine import *
+from excel_engine import *
 from console import show_console, hide_console
 from obsidian_colleagues_and_alumni import update_colleagues_and_alumni_for_all_files, update_colleagues_and_alumni_for_single_file
 
@@ -24,6 +25,11 @@ HOTKEY_OPEN_IDEAS_IN_OBSIDIAN = 'Alt+X'
 
 HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_ALL_FILES = 'Ctrl+Alt+.'
 HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_SINGLE_FILE = 'Alt+.'
+
+HOTKEY_CHECK_IF_COMPANY_EXISTS_IN_DATABASE = 'Ctrl+Alt+W'
+HOTKEY_CHECK_IF_CAREERS_PAGE_EXISTS_IN_DATABASE = 'Ctrl+Alt+P'
+HOTKEY_APPEND_COMPANY_TO_DATABASE = 'Alt+W'
+HOTKEY_APPEND_CAREERS_PAGE_TO_DATABASE = 'Alt+P'
 
 HOTKEY_PRINT_HELP = 'Alt+Q'
 
@@ -50,6 +56,11 @@ def add_hotkeys():
     add_hotkey(HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_ALL_FILES, update_colleagues_and_alumni_for_all_files)
     add_hotkey(HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_SINGLE_FILE, update_colleagues_and_alumni_for_single_file)
 
+    add_hotkey(HOTKEY_CHECK_IF_COMPANY_EXISTS_IN_DATABASE, check_if_company_exists_in_database)
+    add_hotkey(HOTKEY_CHECK_IF_CAREERS_PAGE_EXISTS_IN_DATABASE, check_if_careers_page_exists_in_database)
+    add_hotkey(HOTKEY_APPEND_COMPANY_TO_DATABASE, append_company_to_database)
+    add_hotkey(HOTKEY_APPEND_CAREERS_PAGE_TO_DATABASE, append_careers_page_to_database)
+
 def print_help():
     os.system('cls')
 
@@ -68,6 +79,10 @@ Open LinkedIn File in Obsidian = {HOTKEY_OPEN_LINKEDIN_FILE_IN_OBSIDIAN}
 Open Interesting Links in Obsidian = {HOTKEY_OPEN_CONNECTION_IN_OBSIDIAN}
 Open Ideas in Obsidian = {HOTKEY_OPEN_IDEAS_IN_OBSIDIAN}
 Update Colleagues (All Files) = {HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_ALL_FILES}
-Update Colleagues (Single File) = {HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_SINGLE_FILE}"""
+Update Colleagues (Single File) = {HOTKEY_UPDATE_COLLEAGUES_AND_ALUMNI_FOR_SINGLE_FILE}
+Check for Company in Database = {HOTKEY_CHECK_IF_COMPANY_EXISTS_IN_DATABASE}
+Check for Careers Page in Database = {HOTKEY_CHECK_IF_CAREERS_PAGE_EXISTS_IN_DATABASE}
+Append Company to Database = {HOTKEY_APPEND_COMPANY_TO_DATABASE}
+Append Careers Page to Database = {HOTKEY_APPEND_CAREERS_PAGE_TO_DATABASE}"""
 
     print(help_string)

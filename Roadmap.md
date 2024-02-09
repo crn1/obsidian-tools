@@ -17,3 +17,5 @@
 - What date is parsed when Alt+M?
 - Automatically focus window when Alt+M
 - entity_name and see what is the tag
+- Companies (ALL) to global variables
+- Open up COmpanies Database as a shortcut

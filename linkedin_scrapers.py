@@ -12,8 +12,7 @@ def scrape_value(selector):
     try:
         soup = bs4.BeautifulSoup(html, 'html.parser')
         value = soup.select_one(selector).text.strip().replace('\n', '').replace('  ', ' ')
-        # if value:
-        #     print("Value: " + name.text.strip())
+
     except Exception as e:
         print(e)
 

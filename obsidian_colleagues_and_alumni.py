@@ -7,9 +7,6 @@ from dateutil.parser import parse
 from datetime import datetime
 
 def update_the_file_with_new_matched_arrays(matched_colleagues, matched_alumni, current_file):
-    # print(f'Finished writing to a file: {current_file.name}')
-    # print(matched_colleagues)
-    # print(matched_alumni)
     try:
         current_file.seek(0)  # Rewind to the beginning of the file
         lines = current_file.readlines()
@@ -133,7 +130,6 @@ def compare_durations(current_organizations, comparasion_organizations, person_p
                                 matched_string = f'\n- {entity_name}: [[{comparasion_file_path}]] at [[{organization_file_path}{current_organization_name}]] from {max_duration_start} to {min_duration_end}'
 
                             result.append(matched_string)
-                            #print(matched_string + '\n')
 
         except Exception as e:
             print(e)
