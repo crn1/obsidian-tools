@@ -1,5 +1,6 @@
 import ctypes
 import os
+import global_variables
 
 def hide_console():
     the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
@@ -13,5 +14,8 @@ def show_console():
 
 def clear_console():
     os.system('cls')
-    print('* * * Obsidian Tools v1 by crn1 * * *')
+    print(global_variables.app_title)
     print('Alt + Q to list all hotkeys')
+    print('Alt + A to list all commands')
+    print('Alt + ` to enter a command')
+    print(global_variables.app_separator)
