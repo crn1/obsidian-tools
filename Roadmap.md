@@ -19,3 +19,4 @@
 - entity_name and see what is the tag
 - Companies (ALL) to global variables
 - Open up COmpanies Database as a shortcut
+- Choose between AND and OR operator in the cfv command when searching keywords

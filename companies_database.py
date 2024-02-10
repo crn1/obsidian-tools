@@ -16,7 +16,10 @@ def filter_companies(companies_df, tags=None, industry=None, location=None):
     try:
         filtered_df = companies_df.copy()
         if tags:
-            filtered_df = filtered_df[filtered_df['Tags'].apply(lambda x: any(tag in x for tag in tags))]
+            # AND operator search
+            filtered_df = filtered_df[filtered_df['Tags'].apply(lambda x: all(tag in x.split() for tag in tags))]
+            # OR operator search
+            #filtered_df = filtered_df[filtered_df['Tags'].apply(lambda x: any(tag in x.split() for tag in tags))]
         if industry:
             filtered_df = filtered_df[filtered_df['Industry'] == industry]
         if location:

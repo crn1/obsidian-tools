@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from excel_engine import get_rows
 
 def search_for_vacancies():
+    print('\n* * * Check for Vacancies * * *')
     try:
         # Example usage:
         file_path = global_variables.obsidian_companies_database_path
