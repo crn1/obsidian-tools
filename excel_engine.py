@@ -100,7 +100,7 @@ def append_company_to_database():
 
         tags = input('\n➡️ Enter tags: ')
 
-        values = [company_name, company_url, about, industry, location, company_url, tags]
+        values = [company_name, current_url, about, industry, location, company_url, tags]
         append_row(companies_database_path, values, 'Companies (ALL)')
 
     except Exception as e:
@@ -119,9 +119,10 @@ def append_careers_page_to_database():
             print('\n✅ URL ALREADY IN CAREERS PAGES')
             return False
 
-        department = input('\n➡️ Enter department (defult - General): ') or "General"
+        department = input('\n➡️ Enter department (defult - General): ') or 'General'
+        office = input('\n➡️ Enter office (defult - All): ') or 'All'
 
-        values = [home_url, careers_url, department]
+        values = [home_url, careers_url, department, office]
         append_row(companies_database_path, values, 'Careers Pages')
 
     except Exception as e:

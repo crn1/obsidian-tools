@@ -74,10 +74,11 @@ def search_for_vacancies():
         industry_input = input("➡️ Enter industry (separate by comma ,): ").strip().split(', ') or []
         location_input = input("➡️ Enter location (separate by comma ,): ").strip().split(', ') or []
         department_input = input("➡️ Enter department (separate by comma ,): ").strip().split(', ') or []
+        office_input = input("➡️ Enter office (separate by comma ,): ").strip().split(', ') or []
 
         os.system('cls')
         print(f'Filtering companies . . .')
-        result = search_careers_pages(file_path, tags=tags_input, industry=industry_input, location=location_input, department=department_input)
+        result = search_careers_pages(file_path, tags=tags_input, industry=industry_input, location=location_input, department=department_input, office=office_input)
 
         print(result)
 
@@ -100,7 +101,7 @@ def load_excel_data(file_path):
         print("An error occurred while loading the Excel file: ", e)
         return None, None
 
-def filter_companies(companies_df, tags=None, industry=None, location=None, department=None):
+def filter_companies(companies_df, tags=None, industry=None, location=None, department=None, office=None):
     try:
         filtered_df = companies_df.copy()
 
@@ -122,6 +123,10 @@ def filter_companies(companies_df, tags=None, industry=None, location=None, depa
             for department_term in department:
                 if department_term:
                     filtered_df = filtered_df[filtered_df['Department'].str.contains(department_term, case=False, na=False)]
+        if office:
+            for office_term in office:
+                if office_term:
+                    filtered_df = filtered_df[filtered_df['Office'].str.contains(office_term, case=False, na=False)]
 
         return filtered_df
 
@@ -142,7 +147,7 @@ def match_careers_pages(filtered_careers, filtered_companies=None):
         print("An error occurred while matching companies with careers pages:", e)
         return []
 
-def search_careers_pages(file_path, tags=None, industry=None, location=None, department=None):
+def search_careers_pages(file_path, tags=None, industry=None, location=None, department=None, office=None):
     try:
         companies_df, careers_df = load_excel_data(file_path)
 
@@ -150,7 +155,7 @@ def search_careers_pages(file_path, tags=None, industry=None, location=None, dep
             return []
 
         filtered_companies = filter_companies(companies_df, tags, industry, location)
-        filtered_careers = filter_companies(careers_df, department=department)
+        filtered_careers = filter_companies(careers_df, department=department, office=office)
 
         # Check if there are any filtered companies left after filtering
         if filtered_companies.empty:
