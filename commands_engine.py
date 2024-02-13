@@ -1,6 +1,6 @@
 import os
 import global_variables
-import web_engine
+import companies_database
 
 from keyboard import add_hotkey
 from obsidian_engine import *
@@ -168,7 +168,7 @@ commands = {
         'commands': ['cfv', 'ch for v', 'check for vacancies', 'sfv', 'search for vacancies'],
         'name': 'Check for Vacancies from Database',
         'hotkey': '',
-        'function': web_engine.search_for_vacancies
+        'function': companies_database.search_for_vacancies
     },
 
     # COLLEAGUES AND ALUMNI OPERATIONS

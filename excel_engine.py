@@ -21,8 +21,8 @@ def check_if_company_exists_in_database():
 def check_if_careers_page_exists_in_database():
     try:
         companies_database_path = global_variables.obsidian_companies_database_path
-        current_url = global_variables.current_url
-        return value_exists_in_file(companies_database_path, current_url, 'Careers Pages', '\n✅ IS IN CAREERS PAGE DATABASE', '\n❌ NOT IN CAREERS PAGE DATABASE')
+        careers_url = global_variables.current_url
+        return value_exists_in_file(companies_database_path, careers_url, 'Careers Pages', '\n✅ IS IN CAREERS PAGE DATABASE', '\n❌ NOT IN CAREERS PAGE DATABASE')
 
     except Exception as e:
         print('Error: {e}')
@@ -110,17 +110,18 @@ def append_company_to_database():
 
 def append_careers_page_to_database():
     try:
-        current_url = global_variables.current_url
         companies_database_path = global_variables.obsidian_companies_database_path
-
-        if value_exists_in_file(companies_database_path, current_url, "Companies (ALL)"):
-            print('\n✅ COMPANY ALREADY IN THE DATABASE')
-            return False
-
         careers_url = global_variables.current_url
         home_url = web_common.extract_home_link(careers_url)
 
-        values = [home_url, careers_url]
+        if value_exists_in_file(companies_database_path, careers_url, "Careers Pages"):
+            print(careers_url)
+            print('\n✅ URL ALREADY IN CAREERS PAGES')
+            return False
+
+        department = input('\n➡️ Enter department (defult - General): ') or "General"
+
+        values = [home_url, careers_url, department]
         append_row(companies_database_path, values, 'Careers Pages')
 
     except Exception as e:
