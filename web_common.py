@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+from lxml import etree
 
 def company_url_specific_comparasion(company_url):
     if company_url.startswith('https://www.linkedin.com/company/'):
@@ -11,18 +12,27 @@ def normalize_company_url(company_url):
     return company_url.replace('/people/', '/').replace('/jobs/', '/').replace('/about/', '/')
 
 def extract_home_link(url):
-    # Assuming url is a string variable containing the URL
-    # Split the URL by "/" to separate different parts
-    parts = url.split("/")
+    # Parse the URL
+    parsed_url = urlparse(url)
 
-    # Extract the domain part (the second part after the protocol)
-    # Assuming the URL format is "http://example.com/career-page"
-    domain = parts[2]
+    # Extract the netloc (domain)
+    domain = parsed_url.netloc
 
-    # Construct the home link using the protocol and domain
-    home_link = f"{parts[0]}//{domain}/"
+    # Split the domain by '.' to get the top-level domain and its parent domains
+    domain_parts = domain.split('.')
 
-    return home_link
+    # Check if the domain has at least two parts (e.g., "example.com")
+    if len(domain_parts) >= 2:
+        # If the last part is a two-letter top-level domain (e.g., "com", "net", "org")
+        if len(domain_parts[-1]) == 2:
+            # Return the last two parts joined together (including the top-level domain)
+            return '.'.join(domain_parts[-2:])
+        else:
+            # Otherwise, return the last part (the top-level domain) along with its parent domain
+            return '.'.join(domain_parts[-2:])
+    else:
+        # Return the whole domain if it doesn't have at least two parts
+        return domain
 
 def is_valid_url(url):
     try:
@@ -46,3 +56,19 @@ def get_html(url):
         print(f"An error occurred: {e}")
 
     return ''
+
+def is_valid_xpath(xpath):
+    if not isinstance(xpath, str):
+        return False
+
+    if xpath.lower() == 'nan':
+        return False
+
+    try:
+        # Try parsing the XPath expression
+        etree.XPath(xpath)
+        return True
+    except Exception as e:
+        print(f'Error for Xpath {xpath}: {e}')
+        # If there's a syntax error, return False
+        return False

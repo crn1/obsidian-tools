@@ -52,3 +52,5 @@ forbidden_company_names = [
 'Stealth Startup',
 'Sole Proprietor'
 ]
+
+chrome_cookies_extension_path = 'C:/Users/crn1/AppData/Local/Google/Chrome/User Data/Profile 13/Extensions/edibdbjcniadpccecjdfdjjppcpchdlm/1.1.4_0/'

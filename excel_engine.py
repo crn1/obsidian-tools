@@ -13,7 +13,7 @@ def check_if_company_exists_in_database():
         else:
             current_url = global_variables.current_url
 
-        return value_exists_in_file(companies_database_path, current_url, 'Companies (ALL)', '\n✅ IS IN COMPANIES DATABASE', '\n❌ NOT IN COMPANIES DATABASE')
+        return value_exists_in_file(companies_database_path, current_url, 'Companies (ALL)', '✅ IS IN COMPANIES DATABASE\n', '❌ NOT IN COMPANIES DATABASE\n')
 
     except Exception as e:
         print('Error: {e}')
@@ -22,7 +22,7 @@ def check_if_careers_page_exists_in_database():
     try:
         companies_database_path = global_variables.obsidian_companies_database_path
         careers_url = global_variables.current_url
-        return value_exists_in_file(companies_database_path, careers_url, 'Careers Pages', '\n✅ IS IN CAREERS PAGE DATABASE', '\n❌ NOT IN CAREERS PAGE DATABASE')
+        return value_exists_in_file(companies_database_path, careers_url, 'Careers Pages', '✅ IS IN CAREERS PAGE DATABASE\n', '❌ NOT IN CAREERS PAGE DATABASE\n')
 
     except Exception as e:
         print('Error: {e}')
@@ -98,7 +98,7 @@ def append_company_to_database():
             else:
                 print('\n❌ The URL that you entered is not valid. Please try again.')
 
-        tags = input('\n➡️ Enter tags: ')
+        tags = input('➡️ Enter tags: ')
 
         values = [company_name, current_url, about, industry, location, company_url, tags]
         append_row(companies_database_path, values, 'Companies (ALL)')
@@ -110,6 +110,8 @@ def append_company_to_database():
 
 def append_careers_page_to_database():
     try:
+        global_variables.active_input = True
+
         companies_database_path = global_variables.obsidian_companies_database_path
         careers_url = global_variables.current_url
         home_url = web_common.extract_home_link(careers_url)
@@ -119,14 +121,18 @@ def append_careers_page_to_database():
             print('\n✅ URL ALREADY IN CAREERS PAGES')
             return False
 
-        department = input('\n➡️ Enter department (defult - General): ') or 'General'
-        office = input('\n➡️ Enter office (defult - All): ') or 'All'
+        url = input(f'\n➡️ Enter URL (default - {home_url}): ') or home_url
+        department = input('➡️ Enter department (default - General): ') or 'General'
+        office = input('➡️ Enter office (default - All): ') or 'All'
+        xpath = input('➡️ Enter Next Button XPath: ')
 
-        values = [home_url, careers_url, department, office]
+        values = [url, careers_url, department, office, xpath]
         append_row(companies_database_path, values, 'Careers Pages')
 
     except Exception as e:
         print(f'Error: {e}')
+
+    global_variables.active_input = False
 
 def get_rows(file_path, target_sheet):
     try:

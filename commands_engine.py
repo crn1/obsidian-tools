@@ -104,10 +104,16 @@ commands = {
         'hotkey': 'Alt+U',
         'function': add_new_school_from_linkedin
     },
+    'add_n_y_li': {
+        'commands': ['anyfl', 'add company', 'ay', 'any', 'add new company', 'add new company from linkedin'],
+        'name': 'Add New Company from LinkedIn',
+        'hotkey': 'Alt+Y',
+        'function': add_new_company_from_linkedin
+    },
     'add_n_m_f_li': {
         'commands': ['anmfl', 'add snooze', 'as', 'ans', 'add new snooze', 'add new snooze from linkedin messaging'],
         'name': 'Add New Snooze from LinkedIn Messaging',
-        'hotkey': 'Alt+U',
+        'hotkey': 'Alt+M',
         'function': add_new_school_from_linkedin
     },
 
@@ -138,18 +144,6 @@ commands = {
     },
 
     # EXCEL OPERATIONS
-    'ch_if_com_ex_db': {
-        'commands': ['ciyeid', 'ciyed', 'check if company exists in database'],
-        'name': 'Check for Company in Database',
-        'hotkey': 'Ctrl+Alt+W',
-        'function': check_if_company_exists_in_database
-    },
-    'ch_if_cp_ex_db': {
-        'commands': ['cicped'],
-        'name': 'Check for Careers Page in Database',
-        'hotkey': 'Ctrl+Alt+P',
-        'function': check_if_careers_page_exists_in_database
-    },
     'ap_com_to_db': {
         'commands': ['aytd'],
         'name': 'Append Company to Database',

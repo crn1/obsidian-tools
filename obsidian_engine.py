@@ -5,6 +5,7 @@ import linkedin_scrapers
 import webbrowser
 import yaml
 import web_common
+import excel_engine
 
 from dateutil.parser import parse
 
@@ -298,23 +299,48 @@ def search_for_entity(folder_path, check_variable, message_found='', message_not
 
     return False
 
+check_if_company_exists_in_obsidian = lambda: search_for_entity(
+    global_variables.obsidian_companies_path,
+    global_variables.current_url,
+    "✅ IS IN CRM\n",
+    "❌ NOT IN CRM\n")
+
+check_if_talent_exists_in_obsidian = lambda: search_for_entity(
+    global_variables.obsidian_talents_path,
+    global_variables.current_url,
+    "✅ IS IN TALENT POOL",
+    "❌ NOT IN TALENT POOL")
+
+check_if_connection_exists_in_obsidian = lambda: search_for_entity(
+    global_variables.obsidian_connections_path,
+    global_variables.current_url,
+    "✅ IS IN CRM\n",
+    "❌ NOT IN CRM\n")
+
+check_if_snooze_exists_in_obsidian = lambda: search_for_entity(
+    global_variables.obsidian_snoozes_path,
+    global_variables.current_url,
+    "✅ IS IN SNOOZE",
+    "❌ NOT IN SNOOZE")
+
 def obsidian_checker():
     while True:
         current_url = global_variables.current_url
         time.sleep(0.7)
 
-        if current_url != global_variables.current_url:
-            if not global_variables.active_input:
+        if current_url != global_variables.current_url and not global_variables.active_input:
+            os.system('cls')
+            print(f'🌐 URL: {global_variables.current_url}\n')
 
-                os.system('cls')
-                print(f'Current URL: {global_variables.current_url}\n')
+            if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
+                check_if_talent_exists_in_obsidian()
+                print('')
+                check_if_connection_exists_in_obsidian()
+            elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
+                check_if_company_exists_in_obsidian()
+                excel_engine.check_if_company_exists_in_database()
+            else:
+                excel_engine.check_if_careers_page_exists_in_database()
 
-                if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
-                    search_for_entity(global_variables.obsidian_talents_path, global_variables.current_url, "✅ IS IN TALENT POOL", "❌ NOT IN TALENT POOL")
-                    print('')
-                    search_for_entity(global_variables.obsidian_connections_path, global_variables.current_url, "✅ IS IN CRM\n", "❌ NOT IN CRM\n")
-                elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
-                    search_for_entity(global_variables.obsidian_companies_path, global_variables.current_url, "✅ IS IN CRM\n", "❌ NOT IN CRM\n")
-
-                # Search for snooze anyway, always
-                search_for_entity(global_variables.obsidian_snoozes_path, global_variables.current_url, "✅ IS IN SNOOZE", "❌ NOT IN SNOOZE")
+            # Search for snooze anyway, always
+            check_if_snooze_exists_in_obsidian()

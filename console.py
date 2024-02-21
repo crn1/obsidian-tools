@@ -2,15 +2,14 @@ import ctypes
 import os
 import global_variables
 
-def hide_console():
-    the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
-    ctypes.windll.user32.ShowWindow(the_program_to_hide, 0)  # SW_HIDE = 0
+# Function to manipulate the window based on the provided code
+manipulate_window = lambda codes: [ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), code) for code in codes]
 
-# Function to be executed when the show option is selected
-def show_console():
-    the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
-    ctypes.windll.user32.ShowWindow(the_program_to_hide, 0)  # SW_HIDE = 0
-    ctypes.windll.user32.ShowWindow(the_program_to_hide, 9)  # SW_RESTORE = 9
+# Lambda functions for specific window manipulations
+hide_console = lambda: manipulate_window([0])  # SW_HIDE = 0
+show_console = lambda: manipulate_window([0, 9])  # SW_HIDE = 0, SW_RESTORE = 9
+maximize_console = lambda: manipulate_window([0, 9, 3])  # SW_HIDE = 0, SW_SHOWMAXIMIZED = 3
+minimize_console = lambda: manipulate_window([0, 9, 2])  # SW_HIDE = 0, SW_SHOWMINIMIZED = 2
 
 def clear_console():
     os.system('cls')
