@@ -5,88 +5,58 @@ import asyncio
 import os
 import playwright
 import console
-import time
 import uuid
 import datetime
+import time
 
 from excel_engine import get_rows
 from playwright.async_api import async_playwright, expect
 
-async def scroll_down_while_possible(page, url, calm_down=True, sleep_time=1.5):
+async def scroll_down_while_possible(page, url):
     try:
-        await page.evaluate(
-            """
-            var intervalID = setInterval(function () {
-                var scrollingElement = (document.scrollingElement || document.body);
-                scrollingElement.scrollTop = scrollingElement.scrollHeight;
-            }, 200);
+        await page.wait_for_timeout(1500)
+        prev_height = await page.evaluate('document.body.scrollHeight')
 
-            """
-        )
-
-        prev_height = None
         while True:
-            curr_height = await page.evaluate('(window.innerHeight + window.scrollY)')
-            if not prev_height:
-                prev_height = curr_height
+            await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+            await page.wait_for_timeout(1500)
 
-                # Sleep anyway for one second, just in case
-                time.sleep(sleep_time)
-                if calm_down:
-                    await page_calm_down(page, url)
+            curr_height = await page.evaluate('document.body.scrollHeight')
 
-            elif prev_height == curr_height:
-                await page.evaluate('clearInterval(intervalID)')
+            if prev_height == curr_height:
                 break
-
             else:
                 prev_height = curr_height
-                time.sleep(sleep_time)
-
-                if calm_down:
-                    await page_calm_down(page, url)
 
     except Exception as e:
         print(f"❌ Error scrolling on {url}: {e}")
 
-async def load_page(page, url, timeout=10000, calm_down=True, xpath=None):
+async def load_page(page, url, calm_down=True, xpath=None):
     # Loading the URL provided
     if web_common.is_valid_xpath(xpath):
-        print(f'Loading page on {url} with xpath {xpath}')
+        print(f'📄 Loading page on {url} with xpath {xpath}')
     else:
         pass
-        print(f'Loading page on {url}')
+        print(f'📄 Loading page on {url}')
 
     try:
-        await page.goto(url, timeout=timeout)
-
-        if calm_down:
-            await page_calm_down(page, url)
+        await page.goto(url)
 
     except Exception as e:
         print(f"❌ Error for {url}: {e}")
         return False
 
-async def element_click(page, element, url, calm_down=True):
-    try:
-        await element.click(force=True)
+    if calm_down:
+        await page_calm_down(page, url)
 
-        if calm_down:
-            await page_calm_down(page, url)
-
-    except Exception as e:
-        print(f"❌ Error for the element {str(element)}: {e}")
-        return False
-
-async def page_calm_down(page, url, timeout=10000):
-    #print(f'Waiting for networkidle on {url}')
+async def page_calm_down(page, url):
     try:
         # Wait for networkidle or other stability signals
-        await page.wait_for_load_state("networkidle", timeout=timeout)
+        await page.wait_for_load_state("networkidle")
         return True
 
     except Exception as e:
-        print(f"❌ Error for {url}: {e}")
+        print(f"⚠️ Error while waiting for networkidle on {url}: {e}")
         return False
 
 async def process_final_html(page, url, keywords, result_path, calm_down=True):
@@ -104,63 +74,44 @@ async def process_final_html(page, url, keywords, result_path, calm_down=True):
     except Exception as e:
         print(f"❌ Error for {url}: {e}")
 
-async def download_rendered_html(context, url, xpath, keywords, result_path, link_hop=0, click_count=0, current_html=None):
-
-    max_link_hops = 3
-    max_clicks = 10
+async def download_rendered_html(context, url, xpath, keywords, result_path):
 
     page = await context.new_page()
     # Loading the URL provided
     await load_page(page, url, xpath=xpath)
 
-    try:
-        while click_count < max_clicks and link_hop < max_link_hops and web_common.is_valid_xpath(xpath):
+    max_clicks = 10
+    click_count = 0
+    current_html = await page.content()
+    await page_calm_down(page, url)
+    await scroll_down_while_possible(page, url)
 
-            #Scroll down until the end of the page to load dynamic content just in case
-            await scroll_down_while_possible(page, url)
+    try:
+        while click_count < max_clicks and web_common.is_valid_xpath(xpath):
 
             # Find the targeted element using xpath
             element = page.locator(xpath)
             if element:
-                #print(f'click_count={click_count}\nlink_hop={link_hop}')
 
-                # Click on the found element, it's wait automatically for networkidle
-                await element_click(page, element, url)
+                await element.click()
 
-                new_url = page.url
-                #print(f'URL: {url}\nNew URL: {new_url}')
+                click_count += 1
 
-                if url != new_url:
-                    link_hop += 1
+                await scroll_down_while_possible(page, url)
 
-                    # Scenario 1: Dynamic URL and content loading, RECRUSIVE
-                    #print(f'Element {str(element)} on {url} changes current URL (Scenario 2)')
-                    await download_rendered_html(
-                        context, href, xpath, keywords, result_path, link_hop, click_count, new_html
-                    )
-
-                    # Finally break the while loop
-                    break
-
+                new_html = await page.content()
+                if new_html == current_html:
+                    #print(f'No HTML/content changes for {str(element)} on {url}, breaking . . .')
+                    break  # No changes, stop waiting
                 else:
-                    click_count += 1
-
-                    # Scenario 2: Dynamic content loading
-                    #print(f'Element {str(element)} on {url} does not change the current URL')
-                    #print('Loading content . . .')
-                    new_html = await page.content()
-                    if new_html == current_html:
-                        #print(f'No HTML/content changes for {str(element)} on {url}, breaking . . .')
-                        break  # No changes, stop waiting
-                    else:
-                        #print(f'Clicking on {str(element)} changes the URL, iterating . . .')
-                        current_html = new_html
+                    #print(f'Clicking on {str(element)} changes the URL, iterating . . .')
+                    current_html = new_html
 
             # If element doesn't exist or isn't clickable, break
             else:
-                print(f'XPath {xpath} not valid or found on {url}')
-                print(f'Trying with a standard playwright load . . .')
+                print(f'❌ XPath {xpath} not valid or found on {url}')
                 break
+
 
         await process_final_html(page, url, keywords, result_path)
 
@@ -168,43 +119,36 @@ async def download_rendered_html(context, url, xpath, keywords, result_path, lin
         print(f"❌ Error for {url}: {e}")
 
     finally:
-        pass
         await page.close()
 
 async def async_websites_download(urls, xpaths, keywords, result_path):
 
     print('Searching websites . . .')
-
     try:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         driver_dir = os.path.join(dir_path, 'chromedriver')
-        #cookies_extension_dir = os.path.join(dir_path, 'cookies_extension')
 
         # On Windows at least, cookies_extension needs to be copied to ms-playwirght installation path!
         cookies_extension_dir = 'cookies_extension'
-        #log_directory = os.path.join(driver_dir, 'awesome.log')
-        #print(f'Running Chromium Driver from driver_dir: {driver_dir}')
-        #print(f'Loading Cookies Extension from cookies_extension_dir: {cookies_extension_dir}')
 
         async with async_playwright() as p:
             context = await p.chromium.launch_persistent_context(
                 driver_dir,
                 headless=False,
                 args=[
-                    #'--enable-logging',
-                    #'--log-level=DEBUG',
-                    #f'--log-file={log_directory}',
                     f'--disable-extensions-except={cookies_extension_dir}',
                     f'--load-extension={cookies_extension_dir}'
                 ]
             )
 
-            semaphore = asyncio.Semaphore(10)
-            tasks = []
+            semaphore = asyncio.Semaphore(10)  # Semaphore to limit concurrency
 
-            for url, xpath in zip(urls, xpaths):
-                task = asyncio.create_task(download_rendered_html(context, url, xpath, keywords, result_path))
-                tasks.append(task)
+            async def download_with_semaphore(url, xpath):
+                async with semaphore:
+                    await download_rendered_html(context, url, xpath, keywords, result_path)
+
+            # Create tasks with semaphore limit
+            tasks = [download_with_semaphore(url, xpath) for url, xpath in zip(urls, xpaths)]
 
             await asyncio.gather(*tasks)
             await context.close()
@@ -216,41 +160,24 @@ async def async_websites_download(urls, xpaths, keywords, result_path):
 
 async def search_for_keyword(html, url, keywords, result_path):
     try:
-        print(f'Searching keywords for {url}')
+        print(f'🔎 Searching keywords for {url}')
 
         if not isinstance(html, str):
             html = str(html)
 
         # make the html and keywords string lower-case for case insensitivity
         html = html.lower()
-        keywords = keywords.lower()
-
-        # Split the keywords by 'or'
-        or_keywords = keywords.split(' or ')
 
         # Iterate over 'or' groups
-        for or_keyword in or_keywords:
-            and_keywords = or_keyword.split()
-
-            # Initialize flag for 'and' condition
-            all_and_keywords_found = True
-
-            # Iterate over 'and' conditions within each 'or' group
-            for and_keyword in and_keywords:
-                if and_keyword not in html:
-                    all_and_keywords_found = False
-                    break
-
-            # If all 'and' conditions are satisfied, return True
-            if all_and_keywords_found:
-                print(f'✅ Found {or_keyword} in {url}')
+        for keyword in keywords:
+            if keyword.lower() in html:
+                print(f'✅ Found {keyword} in {url}')
 
                 #Append the result to a file
                 append_results_file(result_path, url)
 
                 return True
 
-        # If none of the 'or' groups matched
         # print(f'❌ Keywords not found in {url}')
         return False
 
@@ -264,7 +191,7 @@ def append_results_file(file_name, result):
     try:
         with open(file_name, 'a') as file:
             file.write(f'\n{result}')
-            print(f'{result} successfully written to the results file.')
+            print(f'📝 {result} successfully written to the results file.')
 
     except Exception as e:
         print(f"❌ Error while appending to a results file: {e}")
@@ -291,7 +218,7 @@ def prepare_results_file(keywords, tags, industry, location, department, office)
         # Write the list to the file
         with open(file_name, 'w') as file:
             file.write(f'{global_variables.app_title}')
-            file.write(f'\nSearch results for "{str(keywords)}"')
+            file.write(f'\nSearch results for {str(keywords)}')
             file.write(f'\nDate: {current_date}')
             file.write(f'\nTags: {str(tags)}')
             file.write(f'\nIndsutry: {str(industry)}')
@@ -300,7 +227,7 @@ def prepare_results_file(keywords, tags, industry, location, department, office)
             file.write(f'\nOffice: {str(office)}')
             file.write(f'\n{global_variables.app_separator}')
 
-        print(f'Result file result-{unique_name}-{date_for_file_name}.txt has been created')
+        print(f'📝 Result file result-{unique_name}-{date_for_file_name}.txt has been created')
         return file_name
 
     except Exception as e:
@@ -318,10 +245,11 @@ def search_for_vacancies():
         file_path = global_variables.obsidian_companies_database_path
 
         while True:
-            keywords = str(input('\n➡️ Enter keywords (separate by space and OR operator): ')).strip()
-            if not keywords:
+            keywords_input = str(input("➡️ Enter keywords (separate by comma ,): ")).strip()
+            if not keywords_input:
                 print("❌ Keywords can't be empty, please try again!")
             else:
+                keywords_input = keywords_input.split(', ')
                 break
 
         tags_input = str(input("➡️ Enter tags (separate by comma ,): ")).strip()
@@ -344,8 +272,8 @@ def search_for_vacancies():
         urls, xpaths = search_careers_pages(file_path, tags=tags_input, industry=industry_input, location=location_input, department=department_input, office=office_input)
 
         if urls:
-            result_path = prepare_results_file(keywords, tags_input, industry_input, location_input, department_input, office_input)
-            asyncio.run(async_websites_download(urls, xpaths, keywords, result_path))
+            result_path = prepare_results_file(keywords_input, tags_input, industry_input, location_input, department_input, office_input)
+            asyncio.run(async_websites_download(urls, xpaths, keywords_input, result_path))
 
     except Exception as e:
         print(f'❌ Error: {e}')
@@ -404,12 +332,12 @@ def match_careers_pages(filtered_careers, filtered_companies=None):
             matched_df = filtered_careers.copy()
 
         urls = matched_df['Careers URL'].tolist()
-        xpaths = matched_df['Next Button Xpath'].tolist()
+        xpaths = matched_df['Load More Xpath'].tolist()
 
         return urls, xpaths
 
     except Exception as e:
-        print("An error occurred while matching companies with careers pages:", e)
+        print('❌ An error occurred while matching companies with careers pages:', e)
         return [], []
 
 def search_careers_pages(file_path, tags=None, industry=None, location=None, department=None, office=None):
@@ -432,5 +360,5 @@ def search_careers_pages(file_path, tags=None, industry=None, location=None, dep
         return urls, xpaths
 
     except Exception as e:
-        print("An error occurred while searching for careers pages: ", e)
+        print('❌ An error occurred while searching for careers pages: ', e)
         return [], []

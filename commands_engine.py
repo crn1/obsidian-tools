@@ -30,7 +30,8 @@ def print_commands():
 
 def parse_command():
     global_variables.active_input = True
-    input_command = input('\n➡️ Enter a command: ')
+    os.system('cls')
+    input_command = input('➡️ Enter a command: ')
 
     for command in commands:
         if input_command in commands[command]['commands']:
