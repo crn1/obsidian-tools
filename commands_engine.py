@@ -9,7 +9,7 @@ from console import show_console, hide_console
 from obsidian_colleagues_and_alumni import update_colleagues_and_alumni_for_all_files, update_colleagues_and_alumni_for_single_file
 
 def print_hotkeys():
-    os.system('cls')
+    os.system('cls||clear')
     print(f'{global_variables.app_title}\nList of Hotkeys\n{global_variables.app_separator}')
 
     for command in commands:
@@ -19,7 +19,7 @@ def print_hotkeys():
             print(f'{name} - {hotkey}')
 
 def print_commands():
-    os.system('cls')
+    os.system('cls||clear')
     print(f'{global_variables.app_title}\nList of Commands\n{global_variables.app_separator}')
 
     for command in commands:
@@ -30,7 +30,7 @@ def print_commands():
 
 def parse_command():
     global_variables.active_input = True
-    os.system('cls')
+    os.system('cls||clear')
     input_command = input('➡️ Enter a command: ')
 
     for command in commands:
@@ -175,7 +175,7 @@ commands = {
     },
     'up_cl_al_sf': {
         'commands': ['ucas', 'up cl al sf', 'update colleagues and alumni for current file'],
-        'name': 'Update Colleagues and Alumni for current Files',
+        'name': 'Update Colleagues and Alumni for Current File',
         'hotkey': '',
         'function': update_colleagues_and_alumni_for_single_file
     }

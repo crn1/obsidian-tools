@@ -185,7 +185,7 @@ def compare_single_file_with_all_others():
 
 def compare_all_files_with_all_others(person_path):
     global_variables.active_input = True
-    os.system('cls')
+    os.system('cls||clear')
     print('Started updating colleagues and alumni . . .')
 
     try:

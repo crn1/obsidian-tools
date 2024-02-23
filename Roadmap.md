@@ -10,7 +10,7 @@
 - ~~Sole Proprietor, Freelancer.com, etc. forbid as companies and don't parse~~
 - shortcut for snooze when /linkedin/in is open
 - tomorrow / today / yesterday -> better fuzzy for date
-- URL name aesthetics (print(''))
+- ~~URL name aesthetics (print(''))~~
 - Volunteering? support for this as well
 - ~~Prospects? Howe to differ prospects from contacts?~~
 - ~~Remove "/people" from the link including when search_for_entity~~
@@ -19,4 +19,4 @@
 - entity_name and see what is the tag
 - Companies (ALL) to global variables
 - Open up COmpanies Database as a shortcut
-- Choose between AND and OR operator in the cfv command when searching keywords
+- ~~Choose between AND and OR operator in the cfv command when searching keywords~~

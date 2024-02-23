@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 cookies_extension/
 chromedriver/
+search_results/

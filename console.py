@@ -12,7 +12,7 @@ maximize_console = lambda: manipulate_window([0, 9, 3])  # SW_HIDE = 0, SW_SHOWM
 minimize_console = lambda: manipulate_window([0, 9, 2])  # SW_HIDE = 0, SW_SHOWMINIMIZED = 2
 
 def clear_console():
-    os.system('cls')
+    os.system('cls||clear')
     print(global_variables.app_title)
     print('Alt + Q to list all hotkeys')
     print('Alt + A to list all commands')

@@ -21,4 +21,3 @@ obsidian_thread.start()
 # Wait for both threads to finish
 http_server_thread.join()
 obsidian_thread.join()
-

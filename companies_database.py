@@ -80,7 +80,7 @@ async def download_rendered_html(context, url, xpath, keywords, result_path):
     # Loading the URL provided
     await load_page(page, url, xpath=xpath)
 
-    max_clicks = 10
+    max_clicks = 20
     click_count = 0
     current_html = await page.content()
     await page_calm_down(page, url)
@@ -141,7 +141,7 @@ async def async_websites_download(urls, xpaths, keywords, result_path):
                 ]
             )
 
-            semaphore = asyncio.Semaphore(10)  # Semaphore to limit concurrency
+            semaphore = asyncio.Semaphore(30)  # Semaphore to limit concurrency
 
             async def download_with_semaphore(url, xpath):
                 async with semaphore:
@@ -267,7 +267,7 @@ def search_for_vacancies():
         office_input = str(input("➡️ Enter office (separate by comma ,): ")).strip()
         office_input = office_input.split(', ') if office_input else []
 
-        os.system('cls')
+        os.system('cls||clear')
         print(f'Filtering companies . . .')
         urls, xpaths = search_careers_pages(file_path, tags=tags_input, industry=industry_input, location=location_input, department=department_input, office=office_input)
 

@@ -36,6 +36,9 @@ def extract_home_link(url):
 
 def is_valid_url(url):
     try:
+        if not isinstance(url, str):
+            return False
+
         if not url:
             return False
 
@@ -43,6 +46,10 @@ def is_valid_url(url):
         return all([result.scheme, result.netloc])
 
     except ValueError:
+        return False
+
+    except Exception as e:
+        print(f'\n❌ Error while validating URL {url}: {e}')
         return False
 
 def get_html(url):

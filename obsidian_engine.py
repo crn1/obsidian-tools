@@ -326,11 +326,11 @@ check_if_snooze_exists_in_obsidian = lambda: search_for_entity(
 def obsidian_checker():
     while True:
         current_url = global_variables.current_url
-        time.sleep(0.7)
+        time.sleep(0.5)
 
         if current_url != global_variables.current_url and not global_variables.active_input:
-            os.system('cls')
-            print(f'🌐 URL: {global_variables.current_url}\n')
+            os.system('cls||clear')
+            # print(f'🌐 URL: {global_variables.current_url}\n')
 
             if global_variables.current_url.startswith("https://www.linkedin.com/in/"):
                 check_if_talent_exists_in_obsidian()
@@ -338,9 +338,12 @@ def obsidian_checker():
                 check_if_connection_exists_in_obsidian()
             elif global_variables.current_url.startswith("https://www.linkedin.com/company/"):
                 check_if_company_exists_in_obsidian()
-                excel_engine.check_if_company_exists_in_database()
+                excel_engine.check_if_linkedin_company_exists_in_database()
             else:
                 excel_engine.check_if_careers_page_exists_in_database()
+
+            if not global_variables.current_url.startswith('https://www.linkedin.com/'):
+                excel_engine.check_if_company_exists_in_database()
 
             # Search for snooze anyway, always
             check_if_snooze_exists_in_obsidian()
